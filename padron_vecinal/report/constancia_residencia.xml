@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="action_report_constancia_residencia" model="ir.actions.report">
+        <field name="name">Constancia de Residencia</field>
+        <field name="model">tc.vecino</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">padron_vecinal.constancia_residencia</field>
+        <field name="report_file">padron_vecinal.constancia_residencia</field>
+        <field name="binding_model_id" ref="model_tc_vecino"/>
+    </record>
+
+    <template id="constancia_residencia">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+
+                <div class="page" style="font-family: Arial, Helvetica, sans-serif; padding: 45px; color: #000;">
+
+                    <!-- Encabezado -->
+                    <div style="text-align:center; border-bottom:2px solid #000; padding-bottom:15px; margin-bottom:40px;">
+                        <h2 style="margin:0;">
+                            COMUNA DE WHEELWRIGHT
+                        </h2>
+                        <p style="margin:5px 0 0 0;">
+                            Provincia de Santa Fe
+                        </p>
+                    </div>
+
+                    <!-- Título -->
+                    <h3 style="text-align:center; margin-bottom:40px; letter-spacing:1px;">
+                        CONSTANCIA DE RESIDENCIA
+                    </h3>
+
+                    <!-- Fecha -->
+                    <div style="text-align:right; margin-bottom:30px;">
+                        Wheelwright, ____ / ____ / ______
+                    </div>
+
+                    <!-- Texto -->
+                    <p style="text-align:justify; line-height:2;">
+                        Por la presente, la Comuna de Wheelwright deja constancia que el/la Sr./Sra.
+                        <strong><t t-esc="o.name"/></strong>,
+                        titular del Documento Nacional de Identidad DNI 
+                        <strong><t t-esc="o.dni"/></strong>,
+                        se encuentra registrado/a en el Padron Vecinal de esta localidad,
+                        con domicilio en
+                        <strong><t t-esc="o.direccion"/></strong>
+
+                        <t t-if="o.barrio">
+                            , barrio <strong><t t-esc="o.barrio"/></strong>
+                        </t>
+
+                        , localidad de
+                        <strong><t t-esc="o.localidad"/></strong>.
+                    </p>
+
+                    <p style="text-align:justify; line-height:2;">
+                        Asi mismo, figura inscripto/a bajo el numero de padron
+                        <strong><t t-esc="o.numero_padron"/></strong>.
+                    </p>
+
+                    <p style="text-align:justify; line-height:2;">
+                        Se extiende la presente constancia a solicitud del interesado,
+                        para ser presentada ante quien corresponda.
+                    </p>
+
+                    <!-- Firma -->
+                    <div style="margin-top:120px;">
+                        <div style="width:300px; margin-left:auto; text-align:center;">
+                            <hr style="border:1px solid #000;"/>
+                            <strong>Firma y Sello</strong>
+                            <br/>
+                            Autoridad Comunal
+                        </div>
+                    </div>
+
+                </div>
+
+            </t>
+        </t>
+    </template>
+
+</odoo>

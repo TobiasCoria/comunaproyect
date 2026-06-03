@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="seq_tc_vecino" model="ir.sequence">
+        <field name="name">Padrón de Vecinos</field>
+        <field name="code">tc.vecino</field>
+        <field name="prefix">VEC</field>
+        <field name="padding">5</field>
+        <field name="number_next">1</field>
+        <field name="number_increment">1</field>
+    </record>
+
+    <record id="view_tc_vecino_list" model="ir.ui.view">
+        <field name="name">tc.vecino.list</field>
+        <field name="model">tc.vecino</field>
+        <field name="arch" type="xml">
+            <list string="Padron">
+                <field name="numero_padron"/>
+                <field name="name"/>
+                <field name="dni"/>
+                <field name="barrio"/>
+                <field name="telefono"/>
+                <field name="estado"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_tc_vecino_form" model="ir.ui.view">
+        <field name="name">tc.vecino.form</field>
+        <field name="model">tc.vecino</field>
+        <field name="arch" type="xml">
+            <form string="Vecino">
+                <header>
+                    <button name="action_generar_constancia"
+                        string="Generar constancia"
+                        type="object"
+                        class="btn-primary"/>
+                    <field name="estado" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <field name="foto" widget="image" class="oe_avatar"/>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" placeholder="Nombre completo"/></h1>
+                        <h2><field name="numero_padron" readonly="1"/></h2>
+                    </div>
+                    <notebook>
+                        <page string="Datos personales">
+                            <group>
+                                <group string="Identificación">
+                                    <field name="dni"/>
+                                    <field name="fecha_nacimiento"/>
+                                    <field name="edad"/>
+                                    <field name="genero"/>
+                                </group>
+                                <group string="Contacto">
+                                    <field name="direccion"/>
+                                    <field name="barrio"/>
+                                    <field name="localidad"/>
+                                    <field name="telefono"/>
+                                    <field name="email"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Grupo familiar">
+                            <field name="familiar_ids">
+                                <list>
+                                    <field name="numero_padron"/>
+                                    <field name="name"/>
+                                    <field name="dni"/>
+                                    <field name="telefono"/>
+                                    <field name="estado"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_tc_vecino_search" model="ir.ui.view">
+        <field name="name">tc.vecino.search</field>
+        <field name="model">tc.vecino</field>
+        <field name="arch" type="xml">
+            <search string="Buscar vecinos">
+                <field name="name" string="Nombre"/>
+                <field name="dni" string="DNI"/>
+                <field name="barrio" string="Barrio"/>
+                <filter string="Activos" name="activos"
+                    domain="[('estado','=','activo')]"/>
+                <filter string="Inactivos" name="inactivos"
+                    domain="[('estado','=','inactivo')]"/>
+                <filter string="Fallecidos" name="fallecidos"
+                    domain="[('estado','=','fallecido')]"/>
+                <separator/>
+                <filter string="Agrupar por barrio" name="group_barrio"
+                    context="{'group_by': 'barrio'}"/>
+                <filter string="Agrupar por estado" name="group_estado"
+                    context="{'group_by': 'estado'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_Padron_vecinal" model="ir.actions.act_window">
+        <field name="name">Padrons</field>
+        <field name="res_model">tc.vecino</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_tc_vecino_search"/>
+    </record>
+
+    <menuitem id="menu_comuna" name="Padron" sequence="10"/>
+    <menuitem id="menu_padron_vecinal" name="Padron"
+        parent="menu_comuna"
+        action="action_Padron_vecinal"
+        sequence="10"/>
+
+</odoo>

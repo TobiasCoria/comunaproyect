@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_tc_product,access_tc_product,model_tc_product,,1,1,1,1
+access_tc_product_category,access_tc_product_category,model_tc_product_category,,1,1,1,1
+access_tc_cart,access_tc_cart,model_tc_cart,,1,1,1,1
+access_tc_cart_line,access_tc_cart_line,model_tc_cart_line,,1,1,1,1
+access_tc_order,access_tc_order,model_tc_order,,1,1,1,1
+access_tc_order_line,access_tc_order_line,model_tc_order_line,,1,1,1,1

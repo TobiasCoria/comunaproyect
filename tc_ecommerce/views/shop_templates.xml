@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="shop_index" name="TC Shop">
+        <t t-call="website.layout">
+
+            <!-- Sidebar de categorías -->
+            <div id="tc-sidebar" class="tc-sidebar">
+                <div class="tc-sidebar-header">
+                    <span class="tc-sidebar-title">Categorías</span>
+                    <button class="tc-sidebar-close" onclick="closeSidebar()">✕</button>
+                </div>
+                <div class="tc-sidebar-body">
+                    <a href="/tc-shop" class="tc-sidebar-link">Todos</a>
+                    <t t-foreach="categories" t-as="category">
+                        <a t-attf-href="/tc-shop?category_id=#{category.id}" class="tc-sidebar-link">
+                            <t t-esc="category.name"/>
+                        </a>
+                    </t>
+                </div>
+            </div>
+            <div id="tc-overlay" class="tc-overlay" onclick="closeSidebar()"></div>
+
+            <!-- Header tienda -->
+            <div class="tc-header">
+                <div class="container">
+                    <div class="tc-header-inner">
+                        <button class="tc-hamburger" onclick="openSidebar()">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </button>
+                        <h1 class="tc-brand">TC SHOP</h1>
+                        <a href="/tc-shop/cart" class="tc-cart-link">
+                            Carrito (<t t-esc="len(cart.line_ids)"/>)
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Categoría activa -->
+            <div class="container tc-category-label">
+                <t t-if="current_category">
+                    <t t-foreach="categories" t-as="cat">
+                        <t t-if="cat.id == current_category">
+                            <span><t t-esc="cat.name"/></span>
+                        </t>
+                    </t>
+                </t>
+                <t t-else="">
+                    <span>Todo</span>
+                </t>
+            </div>
+
+            <!-- Grid de productos -->
+            <div class="container">
+                <div class="tc-product-grid">
+                    <t t-foreach="products" t-as="product">
+                        <div class="tc-product-item">
+                            <a t-attf-href="/tc-shop/product/#{product.id}" class="tc-product-link">
+                                <div class="tc-product-img-wrap">
+                                    <t t-if="product.image">
+                                        <img t-att-src="'/web/image/tc.product/%s/image' % product.id"
+                                             class="tc-product-img"/>
+                                    </t>
+                                    <t t-else="">
+                                        <div class="tc-product-no-img">Sin imagen</div>
+                                    </t>
+                                    <div class="tc-product-overlay">
+                                        <form t-attf-action="/tc-shop/cart/add" method="post">
+                                            <input type="hidden" name="product_id" t-att-value="product.id"/>
+                                            <input type="hidden" name="quantity" value="1"/>
+                                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                            <button type="submit" class="tc-add-btn">+ Agregar</button>
+                                        </form>
+                                    </div>
+                                </div>
+                                <div class="tc-product-info">
+                                    <p class="tc-product-name"><t t-esc="product.name"/></p>
+                                    <p class="tc-product-price">$<t t-esc="product.price"/></p>
+                                </div>
+                            </a>
+                        </div>
+                    </t>
+                </div>
+            </div>
+
+            <script>
+                function openSidebar() {
+                    document.getElementById('tc-sidebar').classList.add('open');
+                    document.getElementById('tc-overlay').classList.add('open');
+                }
+                function closeSidebar() {
+                    document.getElementById('tc-sidebar').classList.remove('open');
+                    document.getElementById('tc-overlay').classList.remove('open');
+                }
+            </script>
+
+        </t>
+    </template>
+
+    <!-- Página de detalle del producto -->
+    <template id="shop_product" name="TC Shop - Producto">
+        <t t-call="website.layout">
+            <div class="container mt-5">
+                <div class="row">
+                    <div class="col-md-7">
+                        <t t-if="product.image">
+                            <img t-att-src="'/web/image/tc.product/%s/image' % product.id"
+                                 style="width:100%; border-radius:4px; object-fit:cover; max-height:600px;"/>
+                        </t>
+                    </div>
+                    <div class="col-md-5 d-flex flex-column justify-content-center">
+                        <h1 style="font-size:2rem; font-weight:700; letter-spacing:-0.02em; color:#1d1d1f;">
+                            <t t-esc="product.name"/>
+                        </h1>
+                        <p style="color:#86868b; margin:16px 0;">
+                            <t t-esc="product.description"/>
+                        </p>
+                        <p style="font-size:1.5rem; font-weight:600; color:#1d1d1f; margin-bottom:8px;">
+                            $<t t-esc="product.price"/>
+                        </p>
+                        <p style="color:#86868b; font-size:0.9rem; margin-bottom:24px;">
+                            Stock: <t t-esc="product.stock"/> unidades
+                        </p>
+                        <form action="/tc-shop/cart/add" method="post">
+                            <input type="hidden" name="product_id" t-att-value="product.id"/>
+                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                            <div class="d-flex gap-2 mb-3">
+                                <input type="number" name="quantity" value="1" min="1"
+                                       t-att-max="product.stock"
+                                       style="width:80px; border:1.5px solid #d1d1d6; border-radius:8px; padding:10px; text-align:center;"/>
+                                <button type="submit" class="btn-tc-primary flex-grow-1">
+                                    Agregar al carrito
+                                </button>
+                            </div>
+                        </form>
+                        <a href="/tc-shop" style="color:#86868b; font-size:0.9rem; text-decoration:none;">
+                            ← Volver a la tienda
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- Carrito -->
+    <template id="shop_cart" name="TC Shop - Carrito">
+        <t t-call="website.layout">
+            <div class="container mt-5" style="max-width:800px;">
+                <h1 style="font-size:2rem; font-weight:700; letter-spacing:-0.02em; margin-bottom:40px;">Tu Carrito</h1>
+                <t t-if="not cart.line_ids">
+                    <div style="text-align:center; padding:60px 0; color:#86868b;">
+                        <p style="font-size:1.2rem;">Tu carrito está vacío</p>
+                        <a href="/tc-shop" class="btn-tc-primary" style="max-width:200px; margin:20px auto; display:block;">
+                            Ver productos
+                        </a>
+                    </div>
+                </t>
+                <t t-else="">
+                    <t t-foreach="cart.line_ids" t-as="line">
+                        <div style="display:flex; justify-content:space-between; align-items:center; padding:20px 0; border-bottom:1px solid #f5f5f7;">
+                            <div>
+                                <p style="font-weight:600; margin:0; color:#1d1d1f;"><t t-esc="line.product_id.name"/></p>
+                                <p style="color:#86868b; margin:4px 0; font-size:0.9rem;">Cantidad: <t t-esc="line.quantity"/></p>
+                            </div>
+                            <div style="display:flex; align-items:center; gap:20px;">
+                                <p style="font-weight:600; margin:0; color:#1d1d1f;">$<t t-esc="line.subtotal"/></p>
+                                <a t-attf-href="/tc-shop/cart/remove/#{line.id}"
+                                   style="color:#86868b; font-size:0.85rem; text-decoration:none;">Eliminar</a>
+                            </div>
+                        </div>
+                    </t>
+                    <div style="display:flex; justify-content:space-between; padding:24px 0; font-size:1.2rem; font-weight:700;">
+                        <span>Total</span>
+                        <span>$<t t-esc="cart.total"/></span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; margin-top:20px;">
+                        <a href="/tc-shop" style="color:#86868b; text-decoration:none; font-size:0.9rem; padding-top:12px;">
+                            ← Seguir comprando
+                        </a>
+                        <a href="/tc-shop/checkout" class="btn-tc-primary" style="max-width:220px;">
+                            Confirmar pedido →
+                        </a>
+                    </div>
+                </t>
+            </div>
+        </t>
+    </template>
+
+    <!-- Checkout -->
+    <template id="shop_checkout" name="TC Shop - Checkout">
+        <t t-call="website.layout">
+            <div class="container mt-5">
+                <h1 style="font-size:2rem; font-weight:700; letter-spacing:-0.02em; margin-bottom:40px;">Confirmar Pedido</h1>
+                <div class="row">
+                    <div class="col-md-7">
+                        <div class="tc-checkout-card">
+                            <h4 style="font-weight:600; margin-bottom:24px;">Tus datos</h4>
+                            <form action="/tc-shop/checkout/submit" method="post">
+                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                <div class="mb-3">
+                                    <label class="form-label" style="font-weight:500; color:#1d1d1f;">Nombre completo *</label>
+                                    <input type="text" name="partner_name" class="form-control" required="1"/>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label" style="font-weight:500; color:#1d1d1f;">Email *</label>
+                                    <input type="email" name="partner_email" class="form-control" required="1"/>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label" style="font-weight:500; color:#1d1d1f;">Teléfono</label>
+                                    <input type="text" name="partner_phone" class="form-control"/>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label" style="font-weight:500; color:#1d1d1f;">Dirección *</label>
+                                    <textarea name="partner_address" class="form-control" rows="3" required="1"></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label" style="font-weight:500; color:#1d1d1f;">Notas</label>
+                                    <textarea name="notes" class="form-control" rows="2"></textarea>
+                                </div>
+                                <button type="submit" class="btn-tc-primary">Confirmar pedido →</button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="tc-checkout-card">
+                            <h4 style="font-weight:600; margin-bottom:24px;">Resumen</h4>
+                            <t t-foreach="cart.line_ids" t-as="line">
+                                <div style="display:flex; justify-content:space-between; padding:12px 0; border-bottom:1px solid #e8e8ed;">
+                                    <span style="color:#1d1d1f;"><t t-esc="line.product_id.name"/> x<t t-esc="line.quantity"/></span>
+                                    <span style="font-weight:600;">$<t t-esc="line.subtotal"/></span>
+                                </div>
+                            </t>
+                            <div style="display:flex; justify-content:space-between; padding:20px 0; font-weight:700; font-size:1.1rem;">
+                                <span>Total</span>
+                                <span>$<t t-esc="cart.total"/></span>
+                            </div>
+                            <a href="/tc-shop/cart" style="color:#86868b; font-size:0.9rem; text-decoration:none;">
+                                ← Volver al carrito
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- Confirmación -->
+    <template id="shop_confirmation" name="TC Shop - Confirmación">
+        <t t-call="website.layout">
+            <div class="container tc-confirmation">
+                <div class="checkmark">✅</div>
+                <h1 style="font-size:2.5rem; font-weight:700; letter-spacing:-0.02em; color:#1d1d1f; margin-top:20px;">
+                    ¡Pedido confirmado!
+                </h1>
+                <p style="color:#86868b; font-size:1.1rem; margin:16px 0;">
+                    Gracias por tu compra. Tu número de pedido es:
+                </p>
+                <h2 style="font-size:2rem; font-weight:700; color:#0071e3;">
+                    <t t-esc="order.name"/>
+                </h2>
+                <p style="color:#86868b; margin-top:12px;">
+                    Te contactaremos a <strong><t t-esc="order.partner_email"/></strong>
+                </p>
+                <a href="/tc-shop" class="btn-tc-primary" style="max-width:200px; margin:30px auto 0; display:block;">
+                    Seguir comprando
+                </a>
+            </div>
+        </t>
+    </template>
+
+</odoo>
