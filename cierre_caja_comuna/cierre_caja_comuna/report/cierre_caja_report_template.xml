@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<template id="report_cierre_caja_template">
+    <t t-call="web.html_container">
+        <t t-foreach="docs" t-as="doc">
+            <t t-call="web.external_layout">
+                <div class="page">
+                    <!-- ENCABEZADO -->
+                    <div class="row mb-4">
+                        <div class="col-12 text-center">
+                            <h2 class="text-primary">CIERRE DE CAJA DIARIO</h2>
+                            <h3>COMUNA MUNICIPAL</h3>
+                            <hr/>
+                        </div>
+                    </div>
+
+                    <!-- DATOS PRINCIPALES -->
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <table class="table table-sm table-borderless">
+                                <tr>
+                                    <td><strong>Referencia:</strong></td>
+                                    <td><t t-esc="doc.name"/></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Fecha:</strong></td>
+                                    <td><t t-esc="doc.fecha" t-options='{"widget": "date"}'/></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Responsable:</strong></td>
+                                    <td><t t-esc="doc.responsable_id.name"/></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Estado:</strong></td>
+                                    <td>
+                                        <t t-if="doc.state == 'cerrado'">✓ CERRADO</t>
+                                        <t t-elif="doc.state == 'en_revision'">EN REVISIÓN</t>
+                                        <t t-else="">BORRADOR</t>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-6">
+                            <table class="table table-sm table-borderless">
+                                <tr>
+                                    <td><strong>Aprobado por:</strong></td>
+                                    <td><t t-esc="doc.aprobado_por_id.name or '-'"/></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Fecha/Hora Cierre:</strong></td>
+                                    <td><t t-esc="doc.fecha_cierre_real" t-options='{"widget": "datetime"}'/></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Total Movimientos:</strong></td>
+                                    <td><t t-esc="doc.cantidad_movimientos"/></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- RESUMEN FINANCIERO -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h4 class="bg-light p-2">RESUMEN FINANCIERO DEL DÍA</h4>
+                            <table class="table table-bordered">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Concepto</th>
+                                        <th class="text-end">Importe</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="text-success">
+                                        <td><strong>Total Ingresos</strong></td>
+                                        <td class="text-end">
+                                            <t t-esc="doc.total_ingresos"
+                                               t-options='{"widget": "monetary", "display_currency": doc.moneda_id}'/>
+                                        </td>
+                                    </tr>
+                                    <tr class="text-danger">
+                                        <td><strong>Total Egresos</strong></td>
+                                        <td class="text-end">
+                                            <t t-esc="doc.total_egresos"
+                                               t-options='{"widget": "monetary", "display_currency": doc.moneda_id}'/>
+                                        </td>
+                                    </tr>
+                                    <tr class="text-info">
+                                        <td><strong>Total Transferencias</strong></td>
+                                        <td class="text-end">
+                                            <t t-esc="doc.total_transferencias"
+                                               t-options='{"widget": "monetary", "display_currency": doc.moneda_id}'/>
+                                        </td>
+                                    </tr>
+                                    <tr class="table-primary">
+                                        <td><strong>SALDO NETO DEL DÍA</strong></td>
+                                        <td class="text-end">
+                                            <strong>
+                                                <t t-esc="doc.saldo_neto"
+                                                   t-options='{"widget": "monetary", "display_currency": doc.moneda_id}'/>
+                                            </strong>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- RESUMEN POR CUENTA -->
+                    <t t-if="doc.resumen_cuenta_ids">
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h4 class="bg-light p-2">RESUMEN POR CUENTA BANCARIA</h4>
+                                <table class="table table-bordered table-sm">
+                                    <thead class="table-secondary">
+                                        <tr>
+                                            <th>Cuenta</th>
+                                            <th>Banco</th>
+                                            <th class="text-end">Ingresos</th>
+                                            <th class="text-end">Egresos</th>
+                                            <th class="text-end">Saldo Neto</th>
+                                            <th class="text-center">Movimientos</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-foreach="doc.resumen_cuenta_ids" t-as="resumen">
+                                            <tr>
+                                                <td><t t-esc="resumen.cuenta_id.nombre"/></td>
+                                                <td><t t-esc="resumen.cuenta_id.banco"/></td>
+                                                <td class="text-end text-success">
+                                                    <t t-esc="resumen.total_ingresos"
+                                                       t-options='{"widget": "monetary", "display_currency": resumen.moneda_id}'/>
+                                                </td>
+                                                <td class="text-end text-danger">
+                                                    <t t-esc="resumen.total_egresos"
+                                                       t-options='{"widget": "monetary", "display_currency": resumen.moneda_id}'/>
+                                                </td>
+                                                <td class="text-end">
+                                                    <t t-esc="resumen.saldo_neto"
+                                                       t-options='{"widget": "monetary", "display_currency": resumen.moneda_id}'/>
+                                                </td>
+                                                <td class="text-center">
+                                                    <t t-esc="resumen.cantidad_movimientos"/>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </t>
+
+                    <!-- DETALLE DE MOVIMIENTOS -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h4 class="bg-light p-2">DETALLE DE MOVIMIENTOS</h4>
+                            <table class="table table-bordered table-sm">
+                                <thead class="table-secondary">
+                                    <tr>
+                                        <th>Ref.</th>
+                                        <th>Cuenta</th>
+                                        <th>Tipo</th>
+                                        <th>Concepto</th>
+                                        <th>Comprobante</th>
+                                        <th>Responsable</th>
+                                        <th class="text-end">Ingreso</th>
+                                        <th class="text-end">Egreso</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="doc.movimiento_ids.filtered(lambda m: m.state == 'confirmado')" t-as="mov">
+                                        <tr>
+                                            <td><t t-esc="mov.name"/></td>
+                                            <td><t t-esc="mov.cuenta_id.nombre"/></td>
+                                            <td><t t-esc="mov.tipo_movimiento_id.nombre"/></td>
+                                            <td><t t-esc="mov.concepto"/></td>
+                                            <td><t t-esc="mov.numero_comprobante or '-'"/></td>
+                                            <td><t t-esc="mov.responsable_id.name"/></td>
+                                            <td class="text-end text-success">
+                                                <t t-if="mov.tipo_operacion == 'ingreso'">
+                                                    <t t-esc="mov.monto"
+                                                       t-options='{"widget": "monetary", "display_currency": mov.moneda_id}'/>
+                                                </t>
+                                                <t t-else="">-</t>
+                                            </td>
+                                            <td class="text-end text-danger">
+                                                <t t-if="mov.tipo_operacion == 'egreso'">
+                                                    <t t-esc="mov.monto"
+                                                       t-options='{"widget": "monetary", "display_currency": mov.moneda_id}'/>
+                                                </t>
+                                                <t t-else="">-</t>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                                <tfoot>
+                                    <tr class="table-secondary">
+                                        <td colspan="6"><strong>TOTALES</strong></td>
+                                        <td class="text-end text-success">
+                                            <strong>
+                                                <t t-esc="doc.total_ingresos"
+                                                   t-options='{"widget": "monetary", "display_currency": doc.moneda_id}'/>
+                                            </strong>
+                                        </td>
+                                        <td class="text-end text-danger">
+                                            <strong>
+                                                <t t-esc="doc.total_egresos"
+                                                   t-options='{"widget": "monetary", "display_currency": doc.moneda_id}'/>
+                                            </strong>
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- OBSERVACIONES -->
+                    <t t-if="doc.observaciones">
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <h4 class="bg-light p-2">OBSERVACIONES</h4>
+                                <p><t t-esc="doc.observaciones"/></p>
+                            </div>
+                        </div>
+                    </t>
+
+                    <!-- FIRMAS -->
+                    <div class="row mt-5">
+                        <div class="col-4 text-center">
+                            <div style="border-top: 1px solid black; margin-top: 50px; padding-top: 5px;">
+                                <p><t t-esc="doc.responsable_id.name"/></p>
+                                <p><em>Responsable de Caja</em></p>
+                            </div>
+                        </div>
+                        <div class="col-4 text-center">
+                        </div>
+                        <div class="col-4 text-center">
+                            <div style="border-top: 1px solid black; margin-top: 50px; padding-top: 5px;">
+                                <p><t t-esc="doc.aprobado_por_id.name or '____________________'"/></p>
+                                <p><em>Autorizado por</em></p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </t>
+        </t>
+    </t>
+</template>
+</odoo>
