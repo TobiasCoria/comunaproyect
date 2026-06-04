@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pagos_concepto_user,pagos_comuna.concepto.user,model_pagos_comuna_concepto,base.group_user,1,1,1,1
+access_pagos_pago_user,pagos_comuna.pago.user,model_pagos_comuna_pago,base.group_user,1,1,1,1

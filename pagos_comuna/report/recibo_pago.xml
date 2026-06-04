@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="action_report_recibo_pago" model="ir.actions.report">
+        <field name="name">Recibo de Pago</field>
+        <field name="model">pagos_comuna.pago</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">pagos_comuna.recibo_pago</field>
+        <field name="report_file">pagos_comuna.recibo_pago</field>
+        <field name="binding_model_id" ref="model_pagos_comuna_pago"/>
+    </record>
+
+    <template id="recibo_pago">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <!-- Usamos basic_layout para evitar datos comerciales por defecto -->
+                <t t-call="web.basic_layout">
+                    <div class="page" style="font-family: 'Helvetica', 'Arial', sans-serif; color: #333333; padding: 20px;">
+                        
+                        <!-- Encabezado del Recibo Oficial -->
+                        <div class="row border-bottom pb-3 mb-4" style="border-bottom: 2px solid #1a365d !important;">
+                            <div class="col-6">
+                                <h3 class="text-uppercase" style="font-weight: bold; color: #1a365d; margin: 0; letter-spacing: 1px;">COMUNA DE WHEELWRIGHT</h3>
+                                <p class="text-muted small" style="margin: 0; font-size: 0.85em;">Administración Municipal y Tributaria</p>
+                            </div>
+                            <div class="col-6 text-end text-right">
+                                <h4 style="font-weight: bold; color: #1a365d; margin: 0; letter-spacing: 0.5px;">RECIBO DE PAGO</h4>
+                                <h5 style="margin: 5px 0 0 0; color: #e53e3e; font-weight: bold;">
+                                    Nº <t t-esc="o.name"/>
+                                </h5>
+                            </div>
+                        </div>
+
+                        <!-- Bloque de Información -->
+                        <div class="row mb-4">
+                            <!-- Datos del Contribuyente / Vecino -->
+                            <div class="col-6">
+                                <div style="margin-bottom: 5px;">
+                                    <strong>Vecino: </strong> <t t-esc="o.vecino_id.name"/>
+                                </div>
+                                <div style="margin-bottom: 5px;">
+                                    <strong>DNI: </strong> <t t-esc="o.vecino_id.dni"/>
+                                </div>
+                                <t t-if="o.cuota_nro">
+                                    <div style="margin-bottom: 5px;">
+                                        <strong>Cuota: </strong> <t t-esc="o.cuota_nro"/> de <t t-esc="o.cuota_total"/>
+                                    </div>
+                                </t>
+                            </div>
+
+                            <!-- Fechas e Información del Estado -->
+                            <div class="col-6 text-end text-right">
+                                <div style="margin-bottom: 5px;">
+                                    <strong>F. Emisión: </strong> <t t-esc="o.fecha_emision" t-options='{"widget": "date"}'/>
+                                </div>
+                                <div style="margin-bottom: 5px;">
+                                    <strong>F. Vencimiento: </strong> <t t-esc="o.fecha_vencimiento" t-options='{"widget": "date"}'/>
+                                </div>
+                                <t t-if="o.fecha_pago">
+                                    <div style="margin-bottom: 5px;">
+                                        <strong>F. de Pago: </strong> <t t-esc="o.fecha_pago" t-options='{"widget": "date"}'/>
+                                    </div>
+                                </t>
+                                <div style="margin-bottom: 5px;">
+                                    <strong>Estado: </strong> 
+                                    <span class="text-uppercase font-weight-bold" style="color: #e53e3e;">
+                                        <t t-esc="o.estado"/>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tabla de Detalles (Formato Institucional) -->
+                        <table class="table table-bordered" style="border: 1px solid #cccccc; margin-top: 30px;">
+                            <thead style="background-color: #f7fafc; color: #1a365d;">
+                                <tr>
+                                    <th style="width: 55%; font-weight: bold; border: 1px solid #cccccc;" class="text-uppercase small">Concepto / Tasa Comunal</th>
+                                    <th style="width: 20%; font-weight: bold; border: 1px solid #cccccc;" class="text-center text-uppercase small">Tipo</th>
+                                    <th style="width: 25%; font-weight: bold; border: 1px solid #cccccc;" class="text-end text-right text-uppercase small">Importe</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="border: 1px solid #cccccc;" class="align-middle">
+                                        <span style="font-weight: 500;"><t t-esc="o.concepto_id.name"/></span>
+                                    </td>
+                                    <td style="border: 1px solid #cccccc;" class="text-center align-middle">
+                                        <t t-esc="o.tipo"/>
+                                    </td>
+                                    <td style="border: 1px solid #cccccc; font-weight: bold;" class="text-end text-right align-middle">
+                                        $ <t t-esc="o.monto" t-options='{"widget": "float", "precision": 2}'/>
+                                    </td>
+                                </tr>
+                                <!-- Fila de Totalización -->
+                                <tr style="background-color: #edf2f7;">
+                                    <td colspan="2" style="border: 1px solid #cccccc; font-weight: bold; color: #1a365d;" class="text-end text-right">TOTAL TRIBUTO:</td>
+                                    <td style="border: 1px solid #cccccc; font-weight: bold; color: #1a365d; font-size: 1.05em;" class="text-end text-right">
+                                        $ <t t-esc="o.monto" t-options='{"widget": "float", "precision": 2}'/>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <!-- Sección de Firmas Inferiores -->
+                        <div class="row" style="margin-top: 100px;">
+                            <div class="col-6 text-center">
+                                <div style="border-top: 1px solid #718096; width: 75%; margin: 0 auto; padding-top: 5px;">
+                                    <p style="margin: 0; font-size: 0.85em; font-weight: bold; color: #4a5568;">Firma del Vecino / Contribuyente</p>
+                                </div>
+                            </div>
+                            <div class="col-6 text-center">
+                                <div style="border-top: 1px solid #718096; width: 75%; margin: 0 auto; padding-top: 5px;">
+                                    <p style="margin: 0; font-size: 0.85em; font-weight: bold; color: #4a5568;">Sello y Firma Responsable Comuna</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Pie de página limpio -->
+                        <div class="text-center" style="margin-top: 80px; border-top: 1px dashed #cbd5e0; padding-top: 10px;">
+                            <p class="text-muted" style="font-size: 0.8em; margin: 0; color: #718096;">
+                                Conservar este comprobante como constancia oficial de pago ante la comuna.
+                            </p>
+                        </div>
+
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>

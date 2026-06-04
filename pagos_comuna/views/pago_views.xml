@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="seq_pagos_comuna" model="ir.sequence">
+        <field name="name">Pagos Comuna</field>
+        <field name="code">pagos_comuna.pago</field>
+        <field name="prefix">PAG</field>
+        <field name="padding">5</field>
+        <field name="number_next">1</field>
+        <field name="number_increment">1</field>
+    </record>
+
+    <record id="view_pagos_pago_list" model="ir.ui.view">
+        <field name="name">pagos_comuna.pago.list</field>
+        <field name="model">pagos_comuna.pago</field>
+        <field name="arch" type="xml">
+            <list string="Pagos"
+                decoration-danger="estado == 'vencido'"
+                decoration-success="estado == 'pagado'"
+                decoration-muted="estado == 'anulado'">
+                <field name="name"/>
+                <field name="vecino_id"/>
+                <field name="concepto_id"/>
+                <field name="tipo"/>
+                <field name="monto"/>
+                <field name="fecha_vencimiento"/>
+                <field name="fecha_pago"/>
+                <field name="estado"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pagos_pago_form" model="ir.ui.view">
+        <field name="name">pagos_comuna.pago.form</field>
+        <field name="model">pagos_comuna.pago</field>
+        <field name="arch" type="xml">
+            <form string="Pago">
+                <header>
+                    <button name="action_marcar_pagado"
+                        string="Marcar como pagado"
+                        type="object"
+                        class="btn-primary"
+                        invisible="estado != 'pendiente'"/>
+                    <button name="action_marcar_vencido"
+                        string="Marcar como vencido"
+                        type="object"
+                        invisible="estado != 'pendiente'"/>
+                    <button name="action_anular"
+                        string="Anular"
+                        type="object"
+                        invisible="estado == 'anulado'"/>
+                    <button name="action_generar_recibo"
+                        string="Generar recibo"
+                        type="object"
+                        class="btn-secondary"/>
+                    <field name="estado" widget="statusbar"
+                        statusbar_visible="pendiente,pagado,vencido,anulado"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group string="Datos principales">
+                            <field name="vecino_id"/>
+                            <field name="concepto_id"/>
+                            <field name="tipo" readonly="1"/>
+                            <field name="monto"/>
+                        </group>
+                        <group string="Fechas">
+                            <field name="fecha_emision"/>
+                            <field name="fecha_vencimiento"/>
+                            <field name="fecha_pago"/>
+                        </group>
+                    </group>
+                    <group string="Cuotas">
+                        <group>
+                            <field name="cuota_nro"/>
+                            <field name="cuota_total"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="notas"/>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_pagos_pago_search" model="ir.ui.view">
+        <field name="name">pagos_comuna.pago.search</field>
+        <field name="model">pagos_comuna.pago</field>
+        <field name="arch" type="xml">
+            <search string="Buscar pagos">
+                <field name="name" string="Comprobante"/>
+                <field name="vecino_id" string="Vecino"/>
+                <field name="concepto_id" string="Concepto"/>
+                <filter string="Pendientes" name="pendientes"
+                    domain="[('estado','=','pendiente')]"/>
+                <filter string="Pagados" name="pagados"
+                    domain="[('estado','=','pagado')]"/>
+                <filter string="Vencidos" name="vencidos"
+                    domain="[('estado','=','vencido')]"/>
+                <filter string="Anulados" name="anulados"
+                    domain="[('estado','=','anulado')]"/>
+                <separator/>
+                <filter string="Agrupar por vecino" name="group_vecino"
+                    context="{'group_by': 'vecino_id'}"/>
+                <filter string="Agrupar por concepto" name="group_concepto"
+                    context="{'group_by': 'concepto_id'}"/>
+                <filter string="Agrupar por estado" name="group_estado"
+                    context="{'group_by': 'estado'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_pagos_pago" model="ir.actions.act_window">
+        <field name="name">Pagos</field>
+        <field name="res_model">pagos_comuna.pago</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_pagos_pago_search"/>
+    </record>
+
+    <menuitem id="menu_pagos_comuna" name="Pagos Comuna" sequence="20"/>
+    <menuitem id="menu_pagos_pagos" name="Pagos"
+        parent="menu_pagos_comuna"
+        action="action_pagos_pago"
+        sequence="10"/>
+    <menuitem id="menu_pagos_conceptos" name="Conceptos"
+        parent="menu_pagos_comuna"
+        action="action_pagos_concepto"
+        sequence="20"/>
+
+</odoo>
