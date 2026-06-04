@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- MENÚ PRINCIPAL -->
+    <menuitem id="menu_cierre_caja_root"
+              name="Caja Municipal"
+              sequence="50"
+              web_icon="cierre_caja_comuna,static/src/img/icon.png"
+              groups="cierre_caja_comuna.group_cierre_caja_operador"/>
+
+    <!-- OPERACIONES -->
+    <menuitem id="menu_cierre_caja_operaciones"
+              name="Operaciones"
+              parent="menu_cierre_caja_root"
+              sequence="10"/>
+
+    <menuitem id="menu_cierre_caja_diario"
+              name="Cierres de Caja"
+              parent="menu_cierre_caja_operaciones"
+              action="action_cierre_caja_diario"
+              sequence="10"/>
+
+    <menuitem id="menu_movimientos_bancarios"
+              name="Movimientos Bancarios"
+              parent="menu_cierre_caja_operaciones"
+              action="action_movimiento_bancario"
+              sequence="20"/>
+
+    <!-- CONFIGURACIÓN -->
+    <menuitem id="menu_cierre_caja_config"
+              name="Configuración"
+              parent="menu_cierre_caja_root"
+              sequence="90"
+              groups="cierre_caja_comuna.group_cierre_caja_admin"/>
+
+    <menuitem id="menu_cuentas_bancarias"
+              name="Cuentas Bancarias"
+              parent="menu_cierre_caja_config"
+              action="action_cuenta_bancaria"
+              sequence="10"/>
+
+    <menuitem id="menu_tipos_movimiento"
+              name="Tipos de Movimiento"
+              parent="menu_cierre_caja_config"
+              action="action_tipo_movimiento"
+              sequence="20"/>
+
+</odoo>

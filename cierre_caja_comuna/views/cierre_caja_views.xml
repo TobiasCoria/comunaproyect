@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         CIERRE DE CAJA DIARIO - FORM VIEW
+    ═══════════════════════════════════════════════════════════ -->
+    <record id="view_cierre_caja_form" model="ir.ui.view">
+        <field name="name">cierre.caja.diario.form</field>
+        <field name="model">cierre.caja.diario</field>
+        <field name="arch" type="xml">
+            <form string="Cierre de Caja Diario">
+                <header>
+                    <button name="action_enviar_revision"
+                            string="Enviar a Revisión"
+                            type="object"
+                            class="btn-primary"
+                            invisible="state != 'borrador'"
+                            groups="cierre_caja_comuna.group_cierre_caja_operador"/>
+                    <button name="action_cerrar"
+                            string="Confirmar Cierre"
+                            type="object"
+                            class="btn-primary"
+                            invisible="state != 'en_revision'"
+                            groups="cierre_caja_comuna.group_cierre_caja_supervisor"
+                            confirm="¿Confirmar el cierre de caja? Esta acción no se puede deshacer fácilmente."/>
+                    <button name="action_reabrir"
+                            string="Reabrir"
+                            type="object"
+                            invisible="state not in ('cerrado', 'cancelado')"
+                            groups="cierre_caja_comuna.group_cierre_caja_admin"/>
+                    <button name="action_cancelar"
+                            string="Cancelar"
+                            type="object"
+                            invisible="state in ('cerrado', 'cancelado')"
+                            groups="cierre_caja_comuna.group_cierre_caja_supervisor"
+                            confirm="¿Está seguro de cancelar este cierre de caja?"/>
+                    <button name="action_imprimir"
+                            string="Imprimir Cierre"
+                            type="object"
+                            class="btn-secondary"
+                            invisible="state == 'borrador'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="borrador,en_revision,cerrado"/>
+                </header>
+
+                <sheet>
+                    <div class="oe_button_box" name="button_box"/>
+
+                    <widget name="web_ribbon"
+                            title="Cerrado"
+                            bg_color="bg-success"
+                            invisible="state != 'cerrado'"/>
+                    <widget name="web_ribbon"
+                            title="Cancelado"
+                            bg_color="bg-danger"
+                            invisible="state != 'cancelado'"/>
+
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+
+                    <!-- CABECERA -->
+                    <group>
+                        <group string="Datos del Cierre">
+                            <field name="fecha"
+                                   readonly="state in ('cerrado', 'cancelado')"/>
+                            <field name="responsable_id"
+                                   readonly="state in ('cerrado', 'cancelado')"/>
+                            <field name="moneda_id"
+                                   readonly="state != 'borrador'"
+                                   groups="base.group_multi_currency"/>
+                        </group>
+                        <group string="Aprobación">
+                            <field name="aprobado_por_id" readonly="1"/>
+                            <field name="fecha_cierre_real" readonly="1"/>
+                        </group>
+                    </group>
+
+                    <!-- RESUMEN ESTADÍSTICO -->
+                    <group string="Resumen del Día" class="o_group_col_4">
+                        <div class="o_stat_info">
+                            <span class="o_stat_value text-success">
+                                <field name="total_ingresos" widget="monetary"/>
+                            </span>
+                            <span class="o_stat_text">Total Ingresos</span>
+                        </div>
+                        <div class="o_stat_info">
+                            <span class="o_stat_value text-danger">
+                                <field name="total_egresos" widget="monetary"/>
+                            </span>
+                            <span class="o_stat_text">Total Egresos</span>
+                        </div>
+                        <div class="o_stat_info">
+                            <span class="o_stat_value text-info">
+                                <field name="total_transferencias" widget="monetary"/>
+                            </span>
+                            <span class="o_stat_text">Transferencias</span>
+                        </div>
+                        <div class="o_stat_info">
+                            <span class="o_stat_value text-primary">
+                                <field name="saldo_neto" widget="monetary"/>
+                            </span>
+                            <span class="o_stat_text">Saldo Neto</span>
+                        </div>
+                    </group>
+
+                    <!-- MOVIMIENTOS DEL DÍA -->
+                    <notebook>
+                        <page string="Movimientos del Día" name="movimientos">
+                            <field name="movimiento_ids"
+                                   readonly="state in ('cerrado', 'cancelado')"
+                                   context="{'default_fecha': fecha}">
+                                <list string="Movimientos" editable="bottom"
+                                       decoration-success="tipo_operacion == 'ingreso'"
+                                       decoration-danger="tipo_operacion == 'egreso'"
+                                       decoration-info="tipo_operacion == 'transferencia'"
+                                       decoration-muted="state == 'cancelado'">
+                                    <field name="name" readonly="1" optional="show"/>
+                                    <field name="fecha"/>
+                                    <field name="cuenta_id"/>
+                                    <field name="tipo_movimiento_id"/>
+                                    <field name="tipo_operacion" readonly="1" widget="badge"
+                                           decoration-success="tipo_operacion == 'ingreso'"
+                                           decoration-danger="tipo_operacion == 'egreso'"
+                                           decoration-info="tipo_operacion == 'transferencia'"/>
+                                    <field name="concepto"/>
+                                    <field name="numero_comprobante" optional="show"/>
+                                    <field name="monto" sum="Total"/>
+                                    <field name="responsable_id" optional="hide"/>
+                                    <field name="state" widget="badge"
+                                           decoration-success="state == 'confirmado'"
+                                           decoration-warning="state == 'borrador'"
+                                           decoration-danger="state == 'cancelado'"/>
+                                    <button name="action_confirmar" type="object"
+                                            string="Confirmar"
+                                            icon="fa-check"
+                                            invisible="state != 'borrador'"
+                                            class="btn-success"/>
+                                    <button name="action_cancelar" type="object"
+                                            string="Cancelar"
+                                            icon="fa-times"
+                                            invisible="state != 'borrador'"
+                                            class="btn-danger"/>
+                                </list>
+                            </field>
+                        </page>
+
+                        <page string="Resumen por Cuenta" name="resumen_cuentas">
+                            <field name="resumen_cuenta_ids" readonly="1">
+                                <list string="Resumen por Cuenta">
+                                    <field name="cuenta_id"/>
+                                    <field name="total_ingresos" sum="Total Ingresos"/>
+                                    <field name="total_egresos" sum="Total Egresos"/>
+                                    <field name="saldo_neto" sum="Saldo Neto"/>
+                                    <field name="cantidad_movimientos" sum="Total Movimientos"/>
+                                </list>
+                            </field>
+                        </page>
+
+                        <page string="Observaciones" name="observaciones">
+                            <group>
+                                <field name="observaciones"
+                                       placeholder="Observaciones sobre el cierre de caja..."
+                                       readonly="state in ('cerrado', 'cancelado')"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         CIERRE DE CAJA - LIST VIEW
+    ═══════════════════════════════════════════════════════════ -->
+    <record id="view_cierre_caja_list" model="ir.ui.view">
+        <field name="name">cierre.caja.diario.list</field>
+        <field name="model">cierre.caja.diario</field>
+        <field name="arch" type="xml">
+            <list string="Cierres de Caja"
+                   decoration-success="state == 'cerrado'"
+                   decoration-warning="state == 'en_revision'"
+                   decoration-muted="state == 'cancelado'">
+                <field name="name"/>
+                <field name="fecha"/>
+                <field name="responsable_id"/>
+                <field name="cantidad_movimientos"/>
+                <field name="total_ingresos" sum="Total"/>
+                <field name="total_egresos" sum="Total"/>
+                <field name="saldo_neto" sum="Total"/>
+                <field name="aprobado_por_id"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'cerrado'"
+                       decoration-warning="state == 'en_revision'"
+                       decoration-info="state == 'borrador'"
+                       decoration-danger="state == 'cancelado'"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         CIERRE DE CAJA - SEARCH VIEW
+    ═══════════════════════════════════════════════════════════ -->
+    <record id="view_cierre_caja_search" model="ir.ui.view">
+        <field name="name">cierre.caja.diario.search</field>
+        <field name="model">cierre.caja.diario</field>
+        <field name="arch" type="xml">
+            <search string="Buscar Cierres de Caja">
+                <field name="name" string="Referencia"/>
+                <field name="fecha" string="Fecha"/>
+                <field name="responsable_id" string="Responsable"/>
+
+                <!-- FILTROS -->
+                <filter string="Hoy" name="hoy"
+                        domain="[('fecha','=', context_today().strftime('%Y-%m-%d'))]"/>
+                <filter string="Este Mes" name="este_mes"
+                        domain="[('fecha','&gt;=', (context_today() - relativedelta(day=1)).strftime('%Y-%m-%d')),
+                                  ('fecha','&lt;=', (context_today() - relativedelta(day=31)).strftime('%Y-%m-%d'))]"/>
+                <separator/>
+                <filter string="Borrador" name="borrador" domain="[('state','=','borrador')]"/>
+                <filter string="En Revisión" name="revision" domain="[('state','=','en_revision')]"/>
+                <filter string="Cerrados" name="cerrado" domain="[('state','=','cerrado')]"/>
+                <filter string="Cancelados" name="cancelado" domain="[('state','=','cancelado')]"/>
+
+                <!-- AGRUPACIONES -->
+                <group expand="0" string="Agrupar por">
+                    <filter string="Responsable" name="group_responsable"
+                            context="{'group_by': 'responsable_id'}"/>
+                    <filter string="Estado" name="group_state"
+                            context="{'group_by': 'state'}"/>
+                    <filter string="Mes" name="group_mes"
+                            context="{'group_by': 'fecha:month'}"/>
+                    <filter string="Año" name="group_anio"
+                            context="{'group_by': 'fecha:year'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         DASHBOARD / KANBAN VIEW
+    ═══════════════════════════════════════════════════════════ -->
+    <record id="view_cierre_caja_kanban" model="ir.ui.view">
+        <field name="name">cierre.caja.diario.kanban</field>
+        <field name="model">cierre.caja.diario</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" class="o_kanban_small_column">
+                <field name="name"/>
+                <field name="fecha"/>
+                <field name="responsable_id"/>
+                <field name="total_ingresos"/>
+                <field name="total_egresos"/>
+                <field name="saldo_neto"/>
+                <field name="state"/>
+                <field name="cantidad_movimientos"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="oe_kanban_global_click">
+                            <div class="o_kanban_record_top">
+                                <div class="o_kanban_record_headings">
+                                    <strong class="o_kanban_record_title">
+                                        <field name="name"/>
+                                    </strong>
+                                    <span class="o_kanban_record_subtitle">
+                                        <field name="fecha"/>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="o_kanban_record_body">
+                                <div>
+                                    <span class="text-success fw-bold">↑ </span>
+                                    <field name="total_ingresos" widget="monetary"/>
+                                </div>
+                                <div>
+                                    <span class="text-danger fw-bold">↓ </span>
+                                    <field name="total_egresos" widget="monetary"/>
+                                </div>
+                                <hr class="my-1"/>
+                                <div>
+                                    <strong>Neto: </strong>
+                                    <field name="saldo_neto" widget="monetary"/>
+                                </div>
+                            </div>
+                            <div class="o_kanban_record_bottom">
+                                <div class="oe_kanban_bottom_left">
+                                    <field name="responsable_id" widget="many2one_avatar_employee"/>
+                                </div>
+                                <div class="oe_kanban_bottom_right">
+                                    <span class="badge rounded-pill bg-info">
+                                        <field name="cantidad_movimientos"/> movs.
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- ACTION -->
+    <record id="action_cierre_caja_diario" model="ir.actions.act_window">
+        <field name="name">Cierres de Caja</field>
+        <field name="res_model">cierre.caja.diario</field>
+        <field name="view_mode">list,kanban,form</field>
+        <field name="search_view_id" ref="view_cierre_caja_search"/>
+        <field name="context">{'search_default_hoy': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                ¡Comience registrando el primer cierre de caja!
+            </p>
+            <p>
+                Registre y controle los movimientos bancarios diarios de la comuna.
+            </p>
+        </field>
+    </record>
+
+</odoo>

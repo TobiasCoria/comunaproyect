@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- INGRESOS -->
+        <record id="tipo_mov_tributos" model="cierre.caja.tipo.movimiento">
+            <field name="nombre">Tributos Municipales</field>
+            <field name="codigo">ING-TRI</field>
+            <field name="tipo">ingreso</field>
+            <field name="color">10</field>
+        </record>
+        <record id="tipo_mov_tasas" model="cierre.caja.tipo.movimiento">
+            <field name="nombre">Tasas y Derechos</field>
+            <field name="codigo">ING-TAS</field>
+            <field name="tipo">ingreso</field>
+            <field name="color">10</field>
+        </record>
+        <record id="tipo_mov_multas" model="cierre.caja.tipo.movimiento">
+            <field name="nombre">Multas y Sanciones</field>
+            <field name="codigo">ING-MUL</field>
+            <field name="tipo">ingreso</field>
+            <field name="color">10</field>
+        </record>
+        <record id="tipo_mov_coparticipacion" model="cierre.caja.tipo.movimiento">
+            <field name="nombre">Coparticipación Provincial</field>
+            <field name="codigo">ING-COP</field>
+            <field name="tipo">ingreso</field>
+            <field name="color">10</field>
+        </record>
+        <record id="tipo_mov_subsidios" model="cierre.caja.tipo.movimiento">
+            <field name="nombre">Subsidios y Transferencias</field>
+            <field name="codigo">ING-SUB</field>
+            <field name="tipo">ingreso</field>
+            <field name="color">10</field>
+        </record>
+        <record id="tipo_mov_ing_varios" model="cierre.caja.tipo.movimiento">
+            <field name="nombre">Ingresos Varios</field>
+            <field name="codigo">ING-VAR</field>
+            <field name="tipo">ingreso</field>
+            <field name="color">10</field>
+        </record>
+
+        <!-- EGRESOS -->
+        <record id="tipo_mov_sueldos" model="cierre.caja.tipo.movimiento">
+            <field name="nombre">Sueldos y Salarios</field>
+            <field name="codigo">EGR-SUE</field>
+            <field name="tipo">egreso</field>
+            <field name="color">1</field>
+        </record>
+        <record id="tipo_mov_proveedores" model="cierre.caja.tipo.movimiento">
+            <field name="nombre">Pago a Proveedores</field>
+            <field name="codigo">EGR-PRO</field>
+            <field name="tipo">egreso</field>
+            <field name="color">1</field>
+        </record>
+        <record id="tipo_mov_servicios" model="cierre.caja.tipo.movimiento">
+            <field name="nombre">Servicios Públicos</field>
+            <field name="codigo">EGR-SER</field>
+            <field name="tipo">egreso</field>
+            <field name="color">1</field>
+        </record>
+        <record id="tipo_mov_obras" model="cierre.caja.tipo.movimiento">
+            <field name="nombre">Obras y Mantenimiento</field>
+            <field name="codigo">EGR-OBR</field>
+            <field name="tipo">egreso</field>
+            <field name="color">1</field>
+        </record>
+        <record id="tipo_mov_egr_varios" model="cierre.caja.tipo.movimiento">
+            <field name="nombre">Egresos Varios</field>
+            <field name="codigo">EGR-VAR</field>
+            <field name="tipo">egreso</field>
+            <field name="color">1</field>
+        </record>
+
+        <!-- TRANSFERENCIAS -->
+        <record id="tipo_mov_transferencia" model="cierre.caja.tipo.movimiento">
+            <field name="nombre">Transferencia entre Cuentas</field>
+            <field name="codigo">TRF-CTA</field>
+            <field name="tipo">transferencia</field>
+            <field name="color">4</field>
+        </record>
+    </data>
+</odoo>
