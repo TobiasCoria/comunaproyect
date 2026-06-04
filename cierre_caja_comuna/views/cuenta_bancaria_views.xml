@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- CUENTA BANCARIA - FORM VIEW -->
+    <record id="view_cuenta_bancaria_form" model="ir.ui.view">
+        <field name="name">cierre.caja.cuenta.bancaria.form</field>
+        <field name="model">cierre.caja.cuenta.bancaria</field>
+        <field name="arch" type="xml">
+            <form string="Cuenta Bancaria">
+                <sheet>
+                    <widget name="web_ribbon" title="Inactiva" bg_color="bg-danger"
+                            invisible="active"/>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="%(action_movimiento_bancario)d"
+                                type="action"
+                                class="oe_stat_button"
+                                icon="fa-exchange"
+                                context="{'search_default_cuenta_id': id}">
+                            <field name="movimiento_ids" widget="statinfo" string="Movimientos"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="nombre" placeholder="Nombre de la cuenta..."/></h1>
+                    </div>
+                    <group>
+                        <group string="Datos Bancarios">
+                            <field name="banco"/>
+                            <field name="numero_cuenta"/>
+                            <field name="tipo_cuenta"/>
+                            <field name="moneda_id" groups="base.group_multi_currency"/>
+                        </group>
+                        <group string="CBU / Alias">
+                            <field name="cbu"/>
+                            <field name="alias"/>
+                            <field name="responsable_id"/>
+                        </group>
+                    </group>
+                    <group string="Saldos">
+                        <group>
+                            <field name="saldo_inicial"/>
+                            <field name="saldo_actual" readonly="1"/>
+                        </group>
+                    </group>
+                    <group string="Descripción">
+                        <field name="descripcion" nolabel="1"
+                               placeholder="Observaciones sobre esta cuenta bancaria..."/>
+                    </group>
+                    <field name="active" invisible="1"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- CUENTA BANCARIA - LIST VIEW -->
+    <record id="view_cuenta_bancaria_list" model="ir.ui.view">
+        <field name="name">cierre.caja.cuenta.bancaria.list</field>
+        <field name="model">cierre.caja.cuenta.bancaria</field>
+        <field name="arch" type="xml">
+            <list string="Cuentas Bancarias">
+                <field name="nombre"/>
+                <field name="banco"/>
+                <field name="numero_cuenta"/>
+                <field name="tipo_cuenta"/>
+                <field name="cbu"/>
+                <field name="responsable_id"/>
+                <field name="saldo_inicial"/>
+                <field name="saldo_actual"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ACTION -->
+    <record id="action_cuenta_bancaria" model="ir.actions.act_window">
+        <field name="name">Cuentas Bancarias</field>
+        <field name="res_model">cierre.caja.cuenta.bancaria</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Configure las cuentas bancarias de la comuna.
+            </p>
+        </field>
+    </record>
+
+    <!-- TIPO DE MOVIMIENTO - FORM VIEW -->
+    <record id="view_tipo_movimiento_form" model="ir.ui.view">
+        <field name="name">cierre.caja.tipo.movimiento.form</field>
+        <field name="model">cierre.caja.tipo.movimiento</field>
+        <field name="arch" type="xml">
+            <form string="Tipo de Movimiento">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="codigo"/>
+                            <field name="nombre"/>
+                            <field name="tipo"/>
+                            <field name="color" widget="color_picker"/>
+                        </group>
+                        <group>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                    <group string="Descripción">
+                        <field name="descripcion" nolabel="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- TIPO DE MOVIMIENTO - LIST VIEW -->
+    <record id="view_tipo_movimiento_list" model="ir.ui.view">
+        <field name="name">cierre.caja.tipo.movimiento.list</field>
+        <field name="model">cierre.caja.tipo.movimiento</field>
+        <field name="arch" type="xml">
+            <list string="Tipos de Movimiento">
+                <field name="codigo"/>
+                <field name="nombre"/>
+                <field name="tipo" widget="badge"
+                       decoration-success="tipo == 'ingreso'"
+                       decoration-danger="tipo == 'egreso'"
+                       decoration-info="tipo == 'transferencia'"/>
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ACTION -->
+    <record id="action_tipo_movimiento" model="ir.actions.act_window">
+        <field name="name">Tipos de Movimiento</field>
+        <field name="res_model">cierre.caja.tipo.movimiento</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+</odoo>

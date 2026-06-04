@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_movimiento_bancario_form" model="ir.ui.view">
+        <field name="name">cierre.caja.movimiento.form</field>
+        <field name="model">cierre.caja.movimiento</field>
+        <field name="arch" type="xml">
+            <form string="Movimiento Bancario">
+                <header>
+                    <button name="action_confirmar" string="Confirmar" type="object" class="btn-primary" invisible="state != 'borrador'"/>
+                    <button name="action_cancelar" string="Cancelar" type="object" invisible="state != 'borrador'" confirm="Cancelar este movimiento?"/>
+                    <button name="action_borrador" string="Volver a Borrador" type="object" invisible="state != 'cancelado'" groups="cierre_caja_comuna.group_cierre_caja_supervisor"/>
+                    <field name="state" widget="statusbar" statusbar_visible="borrador,confirmado"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group string="Datos del Movimiento">
+                            <field name="fecha" readonly="state == 'confirmado'"/>
+                            <field name="cuenta_id" readonly="state == 'confirmado'"/>
+                            <field name="tipo_movimiento_id" readonly="state == 'confirmado'"/>
+                            <field name="tipo_operacion" readonly="1"/>
+                            <field name="cuenta_destino_id" readonly="state == 'confirmado'" invisible="tipo_operacion != 'transferencia'"/>
+                        </group>
+                        <group string="Importe">
+                            <field name="monto" readonly="state == 'confirmado'"/>
+                            <field name="numero_comprobante" readonly="state == 'confirmado'"/>
+                            <field name="responsable_id" readonly="state == 'confirmado'"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="concepto" readonly="state == 'confirmado'"/>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_movimiento_bancario_list" model="ir.ui.view">
+        <field name="name">cierre.caja.movimiento.list</field>
+        <field name="model">cierre.caja.movimiento</field>
+        <field name="arch" type="xml">
+            <list string="Movimientos Bancarios">
+                <field name="name"/>
+                <field name="fecha"/>
+                <field name="cuenta_id"/>
+                <field name="tipo_movimiento_id"/>
+                <field name="concepto"/>
+                <field name="monto" sum="Total"/>
+                <field name="state" widget="badge" decoration-success="state == 'confirmado'" decoration-warning="state == 'borrador'" decoration-danger="state == 'cancelado'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_movimiento_bancario_search" model="ir.ui.view">
+        <field name="name">cierre.caja.movimiento.search</field>
+        <field name="model">cierre.caja.movimiento</field>
+        <field name="arch" type="xml">
+            <search string="Buscar Movimientos">
+                <field name="name" string="Referencia"/>
+                <field name="concepto" string="Concepto"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_movimiento_bancario" model="ir.actions.act_window">
+        <field name="name">Movimientos Bancarios</field>
+        <field name="res_model">cierre.caja.movimiento</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_movimiento_bancario_search"/>
+    </record>
+
+</odoo>
