@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_reclamos_categoria_user,reclamos_comuna.categoria user,model_reclamos_comuna_categoria,base.group_user,1,1,1,0
+access_reclamos_categoria_manager,reclamos_comuna.categoria manager,model_reclamos_comuna_categoria,base.group_system,1,1,1,1
+access_reclamos_reclamo_user,reclamos_comuna.reclamo user,model_reclamos_comuna_reclamo,base.group_user,1,1,1,0
+access_reclamos_reclamo_manager,reclamos_comuna.reclamo manager,model_reclamos_comuna_reclamo,base.group_system,1,1,1,1

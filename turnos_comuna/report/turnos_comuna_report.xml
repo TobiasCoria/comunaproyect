@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="action_report_comprobante_turno" model="ir.actions.report">
+        <field name="name">Comprobante de Turno</field>
+        <field name="model">turnos_comuna.turno</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">turnos_comuna.report_comprobante_turno</field>
+        <field name="report_file">turnos_comuna.report_comprobante_turno</field>
+        <field name="print_report_name">'Comprobante-Turno-%s' % (object.numero_turno)</field>
+        <field name="binding_model_id" ref="model_turnos_comuna_turno"/>
+        <field name="binding_type">report</field>
+    </record>
+
+</odoo>

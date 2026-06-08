@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="report_comprobante_turno">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page">
+
+                        <!-- Encabezado del comprobante -->
+                        <div class="row mb-4">
+                            <div class="col-12 text-center">
+                                <h2 class="text-uppercase">
+                                    <strong>Comprobante de Turno</strong>
+                                </h2>
+                                <h3 style="color: #5b5b5b;">
+                                    <t t-esc="o.numero_turno"/>
+                                </h3>
+                            </div>
+                        </div>
+
+                        <hr/>
+
+                        <!-- Datos del Vecino -->
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <h4 class="text-uppercase" style="border-bottom: 2px solid #333; padding-bottom: 5px;">
+                                    Datos del Vecino
+                                </h4>
+                            </div>
+                            <div class="col-6">
+                                <strong>Vecino:</strong>
+                                <span t-field="o.vecino_id"/>
+                            </div>
+                        </div>
+
+                        <!-- Datos del Turno -->
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <h4 class="text-uppercase" style="border-bottom: 2px solid #333; padding-bottom: 5px;">
+                                    Datos del Turno
+                                </h4>
+                            </div>
+                            <div class="col-6">
+                                <strong>Área:</strong>
+                                <span t-field="o.area_id"/>
+                            </div>
+                            <div class="col-6">
+                                <strong>Fecha y Hora:</strong>
+                                <span t-field="o.fecha_hora" t-options='{"format": "dd/MM/yyyy HH:mm"}'/>
+                            </div>
+                            <div class="col-6 mt-2">
+                                <strong>Estado:</strong>
+                                <span t-field="o.state"/>
+                            </div>
+                            <t t-if="o.empleado_id">
+                                <div class="col-6 mt-2">
+                                    <strong>Empleado Asignado:</strong>
+                                    <span t-field="o.empleado_id"/>
+                                </div>
+                            </t>
+                        </div>
+
+                        <!-- Motivo -->
+                        <t t-if="o.motivo">
+                            <div class="row mt-3">
+                                <div class="col-12">
+                                    <h4 class="text-uppercase" style="border-bottom: 2px solid #333; padding-bottom: 5px;">
+                                        Motivo de la Consulta
+                                    </h4>
+                                </div>
+                                <div class="col-12">
+                                    <span t-field="o.motivo"/>
+                                </div>
+                            </div>
+                        </t>
+
+                        <!-- Horario del Área -->
+                        <t t-if="o.area_id.horario_atencion">
+                            <div class="row mt-3">
+                                <div class="col-12">
+                                    <h4 class="text-uppercase" style="border-bottom: 2px solid #333; padding-bottom: 5px;">
+                                        Horario de Atención del Área
+                                    </h4>
+                                </div>
+                                <div class="col-12">
+                                    <span t-field="o.area_id.horario_atencion"/>
+                                </div>
+                            </div>
+                        </t>
+
+                        <!-- Notas -->
+                        <t t-if="o.notas">
+                            <div class="row mt-3">
+                                <div class="col-12">
+                                    <h4 class="text-uppercase" style="border-bottom: 2px solid #333; padding-bottom: 5px;">
+                                        Notas
+                                    </h4>
+                                </div>
+                                <div class="col-12">
+                                    <span t-field="o.notas"/>
+                                </div>
+                            </div>
+                        </t>
+
+                        <hr class="mt-4"/>
+
+                        <!-- Pie del comprobante -->
+                        <div class="row mt-2 text-center">
+                            <div class="col-12">
+                                <small style="color: #888;">
+                                    Este comprobante fue generado automáticamente por el sistema de turnos.
+                                    Por favor preséntelo al momento de su atención.
+                                </small>
+                            </div>
+                        </div>
+
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>

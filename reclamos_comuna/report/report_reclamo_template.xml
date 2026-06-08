@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="report_reclamo_template">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page">
+
+                        <!-- ── Encabezado ─────────────────────────────────── -->
+                        <div class="row mb-4">
+                            <div class="col-12 text-center">
+                                <h2 class="text-primary">
+                                    COMPROBANTE DE RECLAMO
+                                </h2>
+                                <h3>
+                                    <t t-esc="o.name"/>
+                                </h3>
+                            </div>
+                        </div>
+
+                        <!-- ── Estado destacado ───────────────────────────── -->
+                        <div class="row mb-3">
+                            <div class="col-12 text-center">
+                                <span t-attf-class="badge fs-6
+                                    #{ 'text-bg-success' if o.state == 'resuelto' else
+                                       'text-bg-danger' if o.state == 'rechazado' else
+                                       'text-bg-warning' if o.state == 'en_proceso' else
+                                       'text-bg-info' if o.state == 'nuevo' else
+                                       'text-bg-secondary' }">
+                                    <t t-esc="dict(o._fields['state'].selection).get(o.state)"/>
+                                </span>
+                            </div>
+                        </div>
+
+                        <hr/>
+
+                        <!-- ── Datos del Vecino ───────────────────────────── -->
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <h5 class="text-muted">DATOS DEL VECINO</h5>
+                            </div>
+                            <div class="col-6">
+                                <strong>Vecino:</strong>
+                                <t t-esc="o.vecino_id.name"/>
+                            </div>
+                            <div class="col-6" t-if="o.vecino_id.vat">
+                                <strong>DNI / CUIT:</strong>
+                                <t t-esc="o.vecino_id.vat"/>
+                            </div>
+                            <div class="col-6" t-if="o.vecino_id.phone">
+                                <strong>Teléfono:</strong>
+                                <t t-esc="o.vecino_id.phone"/>
+                            </div>
+                            <div class="col-6" t-if="o.vecino_id.email">
+                                <strong>Email:</strong>
+                                <t t-esc="o.vecino_id.email"/>
+                            </div>
+                        </div>
+
+                        <hr/>
+
+                        <!-- ── Datos del Reclamo ──────────────────────────── -->
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <h5 class="text-muted">DATOS DEL RECLAMO</h5>
+                            </div>
+                            <div class="col-6">
+                                <strong>Número de Reclamo:</strong>
+                                <t t-esc="o.name"/>
+                            </div>
+                            <div class="col-6">
+                                <strong>Categoría:</strong>
+                                <t t-esc="o.categoria_id.name"/>
+                            </div>
+                            <div class="col-12 mt-2">
+                                <strong>Título:</strong>
+                                <t t-esc="o.titulo"/>
+                            </div>
+                            <div class="col-6 mt-2">
+                                <strong>Prioridad:</strong>
+                                <t t-esc="dict(o._fields['prioridad'].selection).get(o.prioridad)"/>
+                            </div>
+                            <div class="col-6 mt-2" t-if="o.direccion_reclamo">
+                                <strong>Dirección:</strong>
+                                <t t-esc="o.direccion_reclamo"/>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3" t-if="o.descripcion">
+                            <div class="col-12">
+                                <strong>Descripción:</strong>
+                                <p t-esc="o.descripcion"/>
+                            </div>
+                        </div>
+
+                        <hr/>
+
+                        <!-- ── Fechas y Seguimiento ───────────────────────── -->
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <h5 class="text-muted">SEGUIMIENTO</h5>
+                            </div>
+                            <div class="col-6">
+                                <strong>Fecha de Ingreso:</strong>
+                                <span t-field="o.fecha_ingreso"
+                                      t-options='{"widget": "datetime"}'/>
+                            </div>
+                            <div class="col-6" t-if="o.fecha_resolucion">
+                                <strong>Fecha de Resolución:</strong>
+                                <span t-field="o.fecha_resolucion"
+                                      t-options='{"widget": "datetime"}'/>
+                            </div>
+                            <div class="col-6 mt-2" t-if="o.responsable_id">
+                                <strong>Responsable:</strong>
+                                <t t-esc="o.responsable_id.name"/>
+                            </div>
+                        </div>
+
+                        <hr/>
+
+                        <!-- ── Pie de página del documento ────────────────── -->
+                        <div class="row mt-5">
+                            <div class="col-6 text-center">
+                                <div style="border-top: 1px solid black; padding-top: 5px; margin-top: 40px;">
+                                    <small>Firma del Responsable</small>
+                                </div>
+                            </div>
+                            <div class="col-6 text-center">
+                                <div style="border-top: 1px solid black; padding-top: 5px; margin-top: 40px;">
+                                    <small>Sello Municipal</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mt-3">
+                            <div class="col-12 text-center text-muted">
+                                <small>
+                                    Este comprobante acredita la presentación del reclamo
+                                    N° <t t-esc="o.name"/> con fecha
+                                    <span t-field="o.fecha_ingreso"
+                                          t-options='{"widget": "date"}'/>
+                                </small>
+                            </div>
+                        </div>
+
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>

@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_turnos_comuna_area_user,turnos_comuna.area user,model_turnos_comuna_area,base.group_user,1,1,1,0
+access_turnos_comuna_turno_user,turnos_comuna.turno user,model_turnos_comuna_turno,base.group_user,1,1,1,0
+access_turnos_comuna_area_manager,turnos_comuna.area manager,model_turnos_comuna_area,base.group_system,1,1,1,1
+access_turnos_comuna_turno_manager,turnos_comuna.turno manager,model_turnos_comuna_turno,base.group_system,1,1,1,1

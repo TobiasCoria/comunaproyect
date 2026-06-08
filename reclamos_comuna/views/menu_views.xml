@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ─── Menú Principal ──────────────────────────────────────────────────── -->
+    <menuitem id="menu_reclamos_comuna_root"
+              name="Reclamos Comuna"
+              sequence="50"
+              web_icon="reclamos_comuna,static/description/icon.png"/>
+
+    <!-- ─── Submenús ────────────────────────────────────────────────────────── -->
+    <menuitem id="menu_reclamos_lista"
+              name="Reclamos"
+              parent="menu_reclamos_comuna_root"
+              action="action_reclamo"
+              sequence="10"/>
+
+    <menuitem id="menu_reclamos_categorias"
+              name="Categorías"
+              parent="menu_reclamos_comuna_root"
+              action="action_categoria"
+              sequence="20"/>
+
+</odoo>

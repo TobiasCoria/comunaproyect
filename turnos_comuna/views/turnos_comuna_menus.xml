@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Menú principal -->
+    <menuitem id="menu_turnos_comuna_root"
+              name="Turnos Comuna"
+              sequence="50"
+              web_icon="turnos_comuna,static/description/icon.png"/>
+
+    <!-- Submenú: Turnos -->
+    <menuitem id="menu_turnos_comuna_turnos"
+              name="Turnos"
+              parent="menu_turnos_comuna_root"
+              action="action_turnos_comuna_turno"
+              sequence="10"/>
+
+    <!-- Submenú: Áreas -->
+    <menuitem id="menu_turnos_comuna_areas"
+              name="Áreas"
+              parent="menu_turnos_comuna_root"
+              action="action_turnos_comuna_area"
+              sequence="20"/>
+
+</odoo>

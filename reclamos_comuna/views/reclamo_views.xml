@@ -1,0 +1,231 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_reclamo_list" model="ir.ui.view">
+        <field name="name">reclamos_comuna.reclamo.list</field>
+        <field name="model">reclamos_comuna.reclamo</field>
+        <field name="arch" type="xml">
+            <list string="Reclamos"
+                  decoration-success="state == 'resuelto'"
+                  decoration-danger="state == 'rechazado'"
+                  decoration-warning="state == 'en_proceso'"
+                  decoration-muted="state == 'cerrado'"
+                  multi_edit="1">
+                <field name="name" string="N Reclamo" readonly="1"/>
+                <field name="vecino_id"/>
+                <field name="categoria_id"/>
+                <field name="titulo"/>
+                <field name="prioridad" widget="priority" optional="show"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'resuelto'"
+                       decoration-danger="state == 'rechazado'"
+                       decoration-warning="state == 'en_proceso'"
+                       decoration-info="state == 'nuevo'"
+                       decoration-muted="state == 'cerrado'"/>
+                <field name="responsable_id" optional="show"/>
+                <field name="fecha_ingreso" optional="show"/>
+                <field name="fecha_resolucion" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_reclamo_form" model="ir.ui.view">
+        <field name="name">reclamos_comuna.reclamo.form</field>
+        <field name="model">reclamos_comuna.reclamo</field>
+        <field name="arch" type="xml">
+            <form string="Reclamo">
+                <header>
+                    <button name="action_tomar_reclamo"
+                            string="Tomar Reclamo"
+                            type="object"
+                            class="btn-primary"
+                            invisible="state not in ('nuevo', 'en_proceso')"
+                            confirm="Desea tomar este reclamo y asignarselo a usted?"/>
+                    <button name="action_marcar_resuelto"
+                            string="Marcar como Resuelto"
+                            type="object"
+                            class="btn-success"
+                            invisible="state not in ('nuevo', 'en_proceso')"
+                            confirm="Confirma que el reclamo ha sido resuelto?"/>
+                    <button name="action_cerrar"
+                            string="Cerrar"
+                            type="object"
+                            invisible="state in ('cerrado', 'rechazado')"
+                            confirm="Desea cerrar este reclamo?"/>
+                    <button name="action_rechazar"
+                            string="Rechazar"
+                            type="object"
+                            class="btn-danger"
+                            invisible="state in ('resuelto', 'cerrado', 'rechazado')"
+                            confirm="Confirma que desea rechazar este reclamo?"/>
+                    <button name="action_print_reclamo"
+                            string="Imprimir Comprobante"
+type="object"
+                            icon="fa-print"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="nuevo,en_proceso,resuelto,cerrado"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                        <h3><field name="titulo" placeholder="Titulo del reclamo..."/></h3>
+                    </div>
+                    <notebook>
+                        <page string="Datos del Reclamo" name="datos_reclamo">
+                            <group>
+                                <group string="Informacion Principal">
+                                    <field name="vecino_id"/>
+                                    <field name="categoria_id"/>
+                                    <field name="prioridad" widget="priority"/>
+                                    <field name="direccion_reclamo" placeholder="Calle, altura, barrio..."/>
+                                </group>
+                                <group string="Fechas y Responsable">
+                                    <field name="fecha_ingreso" readonly="1"/>
+                                    <field name="responsable_id"/>
+                                    <field name="fecha_resolucion"
+                                           readonly="state not in ('resuelto', 'cerrado')"/>
+                                </group>
+                            </group>
+                            <group string="Descripcion del Reclamo">
+                                <field name="descripcion"
+                                       nolabel="1"
+                                       placeholder="Describa detalladamente el reclamo..."
+                                       colspan="2"/>
+                            </group>
+                        </page>
+                        <page string="Seguimiento" name="seguimiento">
+                            <group>
+                                <group string="Estado Actual">
+                                    <field name="state" widget="badge"
+                                           decoration-success="state == 'resuelto'"
+                                           decoration-danger="state == 'rechazado'"
+                                           decoration-warning="state == 'en_proceso'"
+                                           decoration-info="state == 'nuevo'"
+                                           decoration-muted="state == 'cerrado'"/>
+                                    <field name="responsable_id"/>
+                                    <field name="fecha_ingreso" readonly="1"/>
+                                    <field name="fecha_resolucion"/>
+                                </group>
+                                <group string="Prioridad">
+                                    <field name="prioridad" widget="priority"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Notas Internas" name="notas_internas">
+                            <field name="notas_internas"
+                                   nolabel="1"
+                                   placeholder="Notas de uso interno..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_reclamo_search" model="ir.ui.view">
+        <field name="name">reclamos_comuna.reclamo.search</field>
+        <field name="model">reclamos_comuna.reclamo</field>
+        <field name="arch" type="xml">
+            <search string="Buscar Reclamos">
+                <field name="name" string="Numero"/>
+                <field name="vecino_id" string="Vecino"/>
+                <field name="categoria_id" string="Categoria"/>
+                <field name="titulo" string="Titulo"/>
+                <field name="responsable_id" string="Responsable"/>
+                <filter string="Nuevos" name="nuevos"
+                        domain="[('state','=','nuevo')]"/>
+                <filter string="En Proceso" name="en_proceso"
+                        domain="[('state','=','en_proceso')]"/>
+                <filter string="Resueltos" name="resueltos"
+                        domain="[('state','=','resuelto')]"/>
+                <filter string="Cerrados" name="cerrados"
+                        domain="[('state','=','cerrado')]"/>
+                <filter string="Rechazados" name="rechazados"
+                        domain="[('state','=','rechazado')]"/>
+                <separator/>
+                <filter string="Prioridad Alta" name="prioridad_alta"
+                        domain="[('prioridad','=','2')]"/>
+                <filter string="Prioridad Media" name="prioridad_media"
+                        domain="[('prioridad','=','1')]"/>
+                <filter string="Prioridad Baja" name="prioridad_baja"
+                        domain="[('prioridad','=','0')]"/>
+                <separator/>
+                <filter string="Mis Reclamos" name="mis_reclamos"
+                        domain="[('responsable_id','=',uid)]"/>
+                <filter string="Sin Responsable" name="sin_responsable"
+                        domain="[('responsable_id','=',False)]"/>
+                <group>
+                    <filter string="Categoria" name="group_categoria"
+                            context="{'group_by': 'categoria_id'}"/>
+                    <filter string="Estado" name="group_estado"
+                            context="{'group_by': 'state'}"/>
+                    <filter string="Prioridad" name="group_prioridad"
+                            context="{'group_by': 'prioridad'}"/>
+                    <filter string="Responsable" name="group_responsable"
+                            context="{'group_by': 'responsable_id'}"/>
+                    <filter string="Fecha de Ingreso" name="group_fecha"
+                            context="{'group_by': 'fecha_ingreso:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_reclamo_kanban" model="ir.ui.view">
+        <field name="name">reclamos_comuna.reclamo.kanban</field>
+        <field name="model">reclamos_comuna.reclamo</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" class="o_kanban_small_column">
+                <field name="state"/>
+                <field name="color"/>
+                <field name="prioridad"/>
+                <templates>
+                    <t t-name="card" color="color">
+                        <div class="oe_kanban_global_click">
+                            <div class="o_kanban_record_top">
+                                <div class="o_kanban_record_headings">
+                                    <strong class="o_kanban_record_title">
+                                        <field name="name"/>
+                                    </strong>
+                                    <field name="prioridad" widget="priority" class="float-end"/>
+                                </div>
+                            </div>
+                            <div class="o_kanban_record_body">
+                                <field name="titulo"/>
+                                <div class="text-muted mt-1">
+                                    <field name="vecino_id"/>
+                                </div>
+                                <div class="text-muted">
+                                    <field name="categoria_id"/>
+                                </div>
+                            </div>
+                            <div class="o_kanban_record_bottom">
+                                <div class="oe_kanban_bottom_left">
+                                    <field name="fecha_ingreso" widget="date"/>
+                                </div>
+                                <div class="oe_kanban_bottom_right">
+                                    <field name="responsable_id" widget="many2one_avatar_user"/>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="action_reclamo" model="ir.actions.act_window">
+        <field name="name">Reclamos</field>
+        <field name="res_model">reclamos_comuna.reclamo</field>
+        <field name="view_mode">list,kanban,form</field>
+        <field name="search_view_id" ref="view_reclamo_search"/>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No hay reclamos registrados
+            </p>
+            <p>Registre el primer reclamo de vecino haciendo clic en Nuevo.</p>
+        </field>
+    </record>
+
+</odoo>

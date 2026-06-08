@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_turnos_comuna_turno_list" model="ir.ui.view">
+        <field name="name">turnos_comuna.turno.list</field>
+        <field name="model">turnos_comuna.turno</field>
+        <field name="arch" type="xml">
+            <list string="Turnos"
+                  decoration-success="state == 'presente'"
+                  decoration-danger="state == 'ausente'"
+                  decoration-warning="state == 'reservado'"
+                  decoration-muted="state == 'cancelado'"
+                  decoration-info="state == 'confirmado'">
+                <field name="numero_turno"/>
+                <field name="vecino_id"/>
+                <field name="area_id"/>
+                <field name="fecha_hora"/>
+                <field name="empleado_id"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'presente'"
+                       decoration-danger="state == 'ausente'"
+                       decoration-warning="state == 'reservado'"
+                       decoration-muted="state == 'cancelado'"
+                       decoration-info="state == 'confirmado'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_turnos_comuna_turno_form" model="ir.ui.view">
+        <field name="name">turnos_comuna.turno.form</field>
+        <field name="model">turnos_comuna.turno</field>
+        <field name="arch" type="xml">
+            <form string="Turno de Atencion">
+                <header>
+                    <button name="action_confirmar"
+                            string="Confirmar Turno"
+                            type="object"
+                            class="btn-primary"
+                            invisible="state != 'reservado'"/>
+                    <button name="action_presente"
+                            string="Marcar Presente"
+                            type="object"
+                            class="btn-success"
+                            invisible="state not in ('reservado', 'confirmado')"/>
+                    <button name="action_ausente"
+                            string="Marcar Ausente"
+                            type="object"
+                            class="btn-warning"
+                            invisible="state not in ('reservado', 'confirmado')"/>
+                    <button name="action_cancelar"
+                            string="Cancelar"
+                            type="object"
+                            class="btn-danger"
+                            invisible="state in ('presente', 'cancelado')"/>
+                    <button name="action_reset_reservado"
+                            string="Revertir a Reservado"
+                            type="object"
+                            invisible="state not in ('cancelado', 'ausente')"/>
+                    <button name="action_print_comprobante"
+                            string="Imprimir Comprobante"
+                            type="object"
+                            class="btn-secondary"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="reservado,confirmado,presente"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="numero_turno"/>
+                        <h1>
+                            <field name="numero_turno" readonly="1"/>
+                        </h1>
+                    </div>
+                    <notebook>
+                        <page string="Datos del Turno" name="datos">
+                            <group>
+                                <group string="Datos del Vecino">
+                                    <field name="vecino_id"
+                                           options="{'no_create': True}"
+                                           readonly="state in ('presente', 'ausente', 'cancelado')"/>
+                                    <field name="motivo"
+                                           readonly="state in ('presente', 'ausente', 'cancelado')"/>
+                                </group>
+                                <group string="Datos del Turno">
+                                    <field name="area_id"
+                                           options="{'no_create': True}"
+                                           readonly="state in ('presente', 'ausente', 'cancelado')"/>
+                                    <field name="fecha_hora"
+                                           readonly="state in ('presente', 'ausente', 'cancelado')"/>
+                                    <field name="empleado_id"
+                                           options="{'no_create': True}"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Notas" name="notas">
+                            <field name="notas"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_turnos_comuna_turno_search" model="ir.ui.view">
+        <field name="name">turnos_comuna.turno.search</field>
+        <field name="model">turnos_comuna.turno</field>
+        <field name="arch" type="xml">
+            <search string="Buscar Turnos">
+                <field name="numero_turno"/>
+                <field name="vecino_id"/>
+                <field name="area_id"/>
+                <field name="empleado_id"/>
+                <separator/>
+                <filter name="reservado" string="Reservados"
+                        domain="[('state','=','reservado')]"/>
+                <filter name="confirmado" string="Confirmados"
+                        domain="[('state','=','confirmado')]"/>
+                <filter name="presente" string="Presentes"
+                        domain="[('state','=','presente')]"/>
+                <filter name="ausente" string="Ausentes"
+                        domain="[('state','=','ausente')]"/>
+                <filter name="cancelado" string="Cancelados"
+                        domain="[('state','=','cancelado')]"/>
+                <separator/>
+                <filter name="group_area" string="Agrupar por Area"
+                        context="{'group_by': 'area_id'}"/>
+                <filter name="group_state" string="Agrupar por Estado"
+                        context="{'group_by': 'state'}"/>
+                <filter name="group_empleado" string="Agrupar por Empleado"
+                        context="{'group_by': 'empleado_id'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_turnos_comuna_turno_calendar" model="ir.ui.view">
+        <field name="name">turnos_comuna.turno.calendar</field>
+        <field name="model">turnos_comuna.turno</field>
+        <field name="arch" type="xml">
+            <calendar string="Turnos" date_start="fecha_hora"
+                      color="area_id" mode="week" quick_create="false">
+                <field name="vecino_id"/>
+                <field name="area_id"/>
+                <field name="state"/>
+            </calendar>
+        </field>
+    </record>
+
+    <record id="action_turnos_comuna_turno" model="ir.actions.act_window">
+        <field name="name">Turnos</field>
+        <field name="res_model">turnos_comuna.turno</field>
+        <field name="view_mode">list,form,calendar</field>
+        <field name="search_view_id" ref="view_turnos_comuna_turno_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Registra el primer turno
+            </p>
+        </field>
+    </record>
+
+    <record id="seq_turnos_comuna_turno" model="ir.sequence">
+        <field name="name">Turnos - Numero de Turno</field>
+        <field name="code">turnos_comuna.turno</field>
+        <field name="prefix">TUR</field>
+        <field name="padding">5</field>
+        <field name="number_next">1</field>
+        <field name="number_increment">1</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+</odoo>

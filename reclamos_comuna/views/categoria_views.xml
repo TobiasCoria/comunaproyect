@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ─── Vista Lista Categorías ─────────────────────────────────────────── -->
+    <record id="view_categoria_list" model="ir.ui.view">
+        <field name="name">reclamos_comuna.categoria.list</field>
+        <field name="model">reclamos_comuna.categoria</field>
+        <field name="arch" type="xml">
+            <list string="Categorías de Reclamos">
+                <field name="name"/>
+                <field name="description"/>
+                <field name="reclamo_count" string="Reclamos"/>
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- ─── Vista Formulario Categorías ────────────────────────────────────── -->
+    <record id="view_categoria_form" model="ir.ui.view">
+        <field name="name">reclamos_comuna.categoria.form</field>
+        <field name="model">reclamos_comuna.categoria</field>
+        <field name="arch" type="xml">
+            <form string="Categoría de Reclamo">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button"
+                                type="object"
+                                name="action_view_reclamos"
+                                icon="fa-list"
+                                invisible="reclamo_count == 0" >
+                            <field name="reclamo_count" widget="statinfo" string="Reclamos"/>
+                        </button>
+                    </div>
+                    <widget name="web_ribbon" title="Archivado"
+                            bg_color="text-bg-danger"
+                            invisible="active"/>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="description" placeholder="Descripción de la categoría..."/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ─── Vista Búsqueda Categorías ──────────────────────────────────────── -->
+    <record id="view_categoria_search" model="ir.ui.view">
+        <field name="name">reclamos_comuna.categoria.search</field>
+        <field name="model">reclamos_comuna.categoria</field>
+        <field name="arch" type="xml">
+            <search string="Buscar Categorías">
+                <field name="name" string="Nombre"/>
+                <filter string="Activas" name="activas" domain="[('active','=',True)]"/>
+                <filter string="Archivadas" name="archivadas" domain="[('active','=',False)]"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- ─── Acción Categorías ───────────────────────────────────────────────── -->
+    <record id="action_categoria" model="ir.actions.act_window">
+        <field name="name">Categorías</field>
+        <field name="res_model">reclamos_comuna.categoria</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_categoria_search"/>
+        <field name="context">{'search_default_activas': 1}</field>
+    </record>
+
+</odoo>
