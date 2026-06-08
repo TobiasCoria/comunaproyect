@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="portal_donacion_form" name="Formulario de Donación">
+        <t t-call="website.layout">
+            <div class="container mt-5 mb-5">
+                <div class="row justify-content-center">
+                    <div class="col-md-8">
+                        <div class="card shadow">
+                            <div class="card-header bg-primary text-white text-center">
+                                <h2>Hacé tu donación</h2>
+                                <p class="mb-0">Tu aporte ayuda a mejorar nuestra comunidad</p>
+                            </div>
+                            <div class="card-body p-4">
+                                <form action="/donaciones/confirmar" method="POST">
+                                    <input type="hidden" name="csrf_token"
+                                        t-att-value="request.csrf_token()"/>
+
+                                    <h5 class="mb-3">Tus datos</h5>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label>Nombre completo *</label>
+                                            <input type="text" name="donante_nombre"
+                                                class="form-control" required="1"
+                                                placeholder="Tu nombre"/>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label>Email *</label>
+                                            <input type="email" name="donante_email"
+                                                class="form-control" required="1"
+                                                placeholder="tu@email.com"/>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label>Teléfono</label>
+                                            <input type="text" name="donante_telefono"
+                                                class="form-control"
+                                                placeholder="Tu teléfono"/>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label>DNI</label>
+                                            <input type="text" name="donante_dni"
+                                                class="form-control"
+                                                placeholder="Tu DNI"/>
+                                        </div>
+                                    </div>
+
+                                    <h5 class="mb-3 mt-3">Tu donación</h5>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label>Tipo de donación *</label>
+                                            <select name="tipo" class="form-control" required="1">
+                                                <option value="dinero">Dinero</option>
+                                                <option value="ropa">Ropa</option>
+                                                <option value="alimentos">Alimentos</option>
+                                                <option value="materiales">Materiales</option>
+                                                <option value="otro">Otro</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label>Monto (ARS)</label>
+                                            <input type="number" name="monto"
+                                                class="form-control" min="1"
+                                                placeholder="Ej: 1000"/>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label>Método de pago</label>
+                                            <select name="metodo_pago" class="form-control">
+                                                <option value="mercadopago">Mercado Pago</option>
+                                                <option value="transferencia">Transferencia bancaria</option>
+                                                <option value="efectivo">Efectivo</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label>Destino</label>
+                                            <input type="text" name="destino"
+                                                class="form-control"
+                                                placeholder="Ej: Obras, Ayuda social..."/>
+                                        </div>
+                                        <div class="col-12 mb-3">
+                                            <label>Descripción</label>
+                                            <textarea name="descripcion"
+                                                class="form-control" rows="3"
+                                                placeholder="Contanos más sobre tu donación..."/>
+                                        </div>
+                                    </div>
+
+                                    <div class="text-center mt-3">
+                                        <button type="submit"
+                                            class="btn btn-primary btn-lg px-5">
+                                            Donar ahora
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_donacion_gracias" name="Gracias por tu donación">
+        <t t-call="website.layout">
+            <div class="container mt-5 mb-5">
+                <div class="row justify-content-center">
+                    <div class="col-md-6 text-center">
+                        <div class="card shadow">
+                            <div class="card-body p-5">
+                                <h1 class="text-success">¡Muchas gracias!</h1>
+                                <p class="lead">Tu donación fue registrada exitosamente.</p>
+                                <t t-if="donacion">
+                                    <p><strong>Nº:</strong> <t t-esc="donacion.name"/></p>
+                                    <p><strong>Donante:</strong> <t t-esc="donacion.donante_nombre"/></p>
+                                    <t t-if="donacion.tipo == 'dinero'">
+                                        <p><strong>Monto:</strong> $ <t t-esc="donacion.monto"/></p>
+                                    </t>
+                                </t>
+                                <a href="/donaciones" class="btn btn-primary mt-3">
+                                    Hacer otra donación
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_donacion_error" name="Error en donación">
+        <t t-call="website.layout">
+            <div class="container mt-5 mb-5">
+                <div class="row justify-content-center">
+                    <div class="col-md-6 text-center">
+                        <div class="card shadow">
+                            <div class="card-body p-5">
+                                <h1 class="text-danger">Algo salió mal</h1>
+                                <p class="lead"><t t-esc="mensaje"/></p>
+                                <a href="/donaciones" class="btn btn-primary mt-3">
+                                    Intentar de nuevo
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+</odoo>

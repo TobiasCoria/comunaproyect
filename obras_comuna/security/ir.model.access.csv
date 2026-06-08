@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_obras_obra_user,obras_comuna.obra.user,model_obras_comuna_obra,base.group_user,1,1,1,1
+access_obras_cuadrilla_user,obras_comuna.cuadrilla.user,model_obras_comuna_cuadrilla,base.group_user,1,1,1,1
+access_obras_avance_user,obras_comuna.avance.user,model_obras_comuna_avance,base.group_user,1,1,1,1

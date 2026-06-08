@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Acción del reporte -->
+    <record id="action_report_recibo_donacion" model="ir.actions.report">
+        <field name="name">Recibo de Donación</field>
+        <field name="model">donaciones_comuna.donacion</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">donaciones_comuna.recibo_donacion_template</field>
+        <field name="report_file">donaciones_comuna.recibo_donacion_template</field>
+        <field name="print_report_name">'Recibo_' + (object.name or 'Donacion')</field>
+        <field name="binding_model_id" ref="model_donaciones_comuna_donacion"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- Template QWeb del recibo -->
+    <template id="recibo_donacion_template">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page">
+
+                        <!-- Encabezado del recibo -->
+                        <div style="text-align: center; margin-bottom: 24px;">
+                            <h2 style="color: #2c6e49; margin-bottom: 4px;">
+                                RECIBO DE DONACIÓN
+                            </h2>
+                            <h3 style="margin-top: 0; color: #555;">
+                                <t t-esc="doc.name"/>
+                            </h3>
+                            <hr style="border-top: 2px solid #2c6e49;"/>
+                        </div>
+
+                        <!-- Estado de la donación -->
+                        <div style="text-align: right; margin-bottom: 16px;">
+                            <span t-if="doc.estado == 'recibida'"
+                                style="background-color: #d4edda; color: #155724; padding: 4px 12px; border-radius: 4px; font-weight: bold; font-size: 13px;">
+                                ✓ DONACIÓN RECIBIDA
+                            </span>
+                            <span t-elif="doc.estado == 'pendiente'"
+                                style="background-color: #fff3cd; color: #856404; padding: 4px 12px; border-radius: 4px; font-weight: bold; font-size: 13px;">
+                                ⏳ PENDIENTE DE CONFIRMACIÓN
+                            </span>
+                            <span t-elif="doc.estado == 'rechazada'"
+                                style="background-color: #f8d7da; color: #721c24; padding: 4px 12px; border-radius: 4px; font-weight: bold; font-size: 13px;">
+                                ✗ RECHAZADA
+                            </span>
+                        </div>
+
+                        <!-- Datos del donante -->
+                        <div style="margin-bottom: 20px;">
+                            <h4 style="color: #2c6e49; border-bottom: 1px solid #ccc; padding-bottom: 4px;">
+                                Datos del Donante
+                            </h4>
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <tr>
+                                    <td style="width: 40%; padding: 5px 0; color: #666; font-weight: bold;">Nombre:</td>
+                                    <td style="padding: 5px 0;"><t t-esc="doc.donante_nombre"/></td>
+                                    <td style="width: 20%; padding: 5px 0; color: #666; font-weight: bold;">DNI:</td>
+                                    <td style="padding: 5px 0;">
+                                        <t t-if="doc.donante_dni">
+                                            <t t-esc="doc.donante_dni"/>
+                                        </t>
+                                        <t t-else="">—</t>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 5px 0; color: #666; font-weight: bold;">Email:</td>
+                                    <td style="padding: 5px 0;"><t t-esc="doc.donante_email"/></td>
+                                    <td style="padding: 5px 0; color: #666; font-weight: bold;">Teléfono:</td>
+                                    <td style="padding: 5px 0;">
+                                        <t t-if="doc.donante_telefono">
+                                            <t t-esc="doc.donante_telefono"/>
+                                        </t>
+                                        <t t-else="">—</t>
+                                    </td>
+                                </tr>
+                                <tr t-if="doc.vecino_id">
+                                    <td style="padding: 5px 0; color: #666; font-weight: bold;">Vecino vinculado:</td>
+                                    <td colspan="3" style="padding: 5px 0;"><t t-esc="doc.vecino_id.name"/></td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <!-- Datos de la donación -->
+                        <div style="margin-bottom: 20px;">
+                            <h4 style="color: #2c6e49; border-bottom: 1px solid #ccc; padding-bottom: 4px;">
+                                Detalle de la Donación
+                            </h4>
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <tr>
+                                    <td style="width: 40%; padding: 5px 0; color: #666; font-weight: bold;">Tipo de donación:</td>
+                                    <td style="padding: 5px 0;">
+                                        <t t-esc="dict(doc._fields['tipo'].selection).get(doc.tipo, doc.tipo)"/>
+                                    </td>
+                                    <td style="width: 20%; padding: 5px 0; color: #666; font-weight: bold;">Fecha:</td>
+                                    <td style="padding: 5px 0;">
+                                        <t t-esc="doc.fecha" t-options='{"widget": "datetime", "format": "dd/MM/yyyy HH:mm"}'/>
+                                    </td>
+                                </tr>
+                                <tr t-if="doc.tipo == 'dinero'">
+                                    <td style="padding: 5px 0; color: #666; font-weight: bold;">Monto:</td>
+                                    <td style="padding: 5px 0; font-size: 16px; font-weight: bold; color: #2c6e49;">
+                                        $ <t t-esc="'%.2f' % doc.monto"/>
+                                    </td>
+                                    <td style="padding: 5px 0; color: #666; font-weight: bold;">Método de pago:</td>
+                                    <td style="padding: 5px 0;">
+                                        <t t-esc="dict(doc._fields['metodo_pago'].selection).get(doc.metodo_pago, doc.metodo_pago)"/>
+                                    </td>
+                                </tr>
+                                <tr t-if="doc.destino">
+                                    <td style="padding: 5px 0; color: #666; font-weight: bold;">Destino:</td>
+                                    <td colspan="3" style="padding: 5px 0;"><t t-esc="doc.destino"/></td>
+                                </tr>
+                                <tr t-if="doc.descripcion">
+                                    <td style="padding: 5px 0; color: #666; font-weight: bold; vertical-align: top;">Descripción:</td>
+                                    <td colspan="3" style="padding: 5px 0;"><t t-esc="doc.descripcion"/></td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <!-- Datos de pago Mercado Pago (solo si aplica) -->
+                        <div t-if="doc.metodo_pago == 'mercadopago' and (doc.mp_payment_id or doc.mp_status)"
+                            style="margin-bottom: 20px;">
+                            <h4 style="color: #2c6e49; border-bottom: 1px solid #ccc; padding-bottom: 4px;">
+                                Información de Pago — Mercado Pago
+                            </h4>
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <tr t-if="doc.mp_payment_id">
+                                    <td style="width: 40%; padding: 5px 0; color: #666; font-weight: bold;">ID de pago:</td>
+                                    <td style="padding: 5px 0;"><t t-esc="doc.mp_payment_id"/></td>
+                                </tr>
+                                <tr t-if="doc.mp_status">
+                                    <td style="padding: 5px 0; color: #666; font-weight: bold;">Estado del pago:</td>
+                                    <td style="padding: 5px 0;"><t t-esc="doc.mp_status"/></td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <!-- Cuadro resumen para donaciones en dinero -->
+                        <div t-if="doc.tipo == 'dinero'"
+                            style="background-color: #f0f7f4; border: 1px solid #2c6e49; border-radius: 6px; padding: 16px; margin-bottom: 24px; text-align: center;">
+                            <div style="font-size: 13px; color: #555; margin-bottom: 4px;">Monto total donado</div>
+                            <div style="font-size: 28px; font-weight: bold; color: #2c6e49;">
+                                $ <t t-esc="'%.2f' % doc.monto"/>
+                            </div>
+                            <div style="font-size: 12px; color: #777; margin-top: 4px;">ARS — Pesos Argentinos</div>
+                        </div>
+
+                        <!-- Pie de página / agradecimiento -->
+                        <div style="border-top: 1px solid #ccc; padding-top: 16px; text-align: center; color: #666; font-size: 12px;">
+                            <p style="margin: 4px 0;">
+                                Gracias por su generosa contribución. Su donación ayuda a mejorar nuestra comunidad.
+                            </p>
+                            <p style="margin: 4px 0;">
+                                Este documento es el comprobante oficial de su donación — Municipalidad / Comuna.
+                            </p>
+                            <p style="margin: 8px 0 0 0; font-size: 11px; color: #aaa;">
+                                Generado el
+                                <t t-esc="context_timestamp(datetime.datetime.now()).strftime('%d/%m/%Y a las %H:%M')"/>
+                            </p>
+                        </div>
+
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>

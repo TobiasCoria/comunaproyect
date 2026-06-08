@@ -2,7 +2,7 @@
 {
     'name': 'Cierre de Caja - Comuna',
     'version': '19.0.1.0.0',
-    'category': 'Accounting/Accounting',
+    'category': 'Government',
     'summary': 'Gestión de Cierre de Caja Diario para Comunas Municipales',
     'description': """
         Módulo para la gestión del cierre de caja diario de comunas.

@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="seq_obras_comuna" model="ir.sequence">
+        <field name="name">Obras Comuna</field>
+        <field name="code">obras_comuna.obra</field>
+        <field name="prefix">OBR</field>
+        <field name="padding">5</field>
+        <field name="number_next">1</field>
+        <field name="number_increment">1</field>
+    </record>
+
+    <record id="view_obras_obra_list" model="ir.ui.view">
+        <field name="name">obras_comuna.obra.list</field>
+        <field name="model">obras_comuna.obra</field>
+        <field name="arch" type="xml">
+            <list string="Obras"
+                decoration-success="estado == 'finalizada'"
+                decoration-danger="estado == 'cancelada'"
+                decoration-warning="estado == 'pausada'"
+                decoration-info="estado == 'en_ejecucion'">
+                <field name="numero_obra"/>
+                <field name="name"/>
+                <field name="tipo"/>
+                <field name="barrio"/>
+                <field name="cuadrilla_id"/>
+                <field name="responsable_id"/>
+                <field name="fecha_inicio"/>
+                <field name="fecha_fin_estimada"/>
+                <field name="porcentaje_avance"/>
+                <field name="prioridad"/>
+                <field name="estado"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_obras_obra_form" model="ir.ui.view">
+        <field name="name">obras_comuna.obra.form</field>
+        <field name="model">obras_comuna.obra</field>
+        <field name="arch" type="xml">
+            <form string="Obra">
+                <header>
+                    <button name="action_iniciar"
+                        string="Iniciar obra"
+                        type="object"
+                        class="btn-primary"
+                        invisible="estado != 'planificada'"/>
+                    <button name="action_pausar"
+                        string="Pausar"
+                        type="object"
+                        invisible="estado != 'en_ejecucion'"/>
+                    <button name="action_finalizar"
+                        string="Finalizar"
+                        type="object"
+                        class="btn-primary"
+                        invisible="estado not in ['en_ejecucion', 'pausada']"/>
+                    <button name="action_cancelar"
+                        string="Cancelar"
+                        type="object"
+                        invisible="estado in ['finalizada', 'cancelada']"/>
+                    <button name="action_generar_informe"
+                        string="Generar informe"
+                        type="object"
+                        class="btn-secondary"/>
+                    <field name="estado" widget="statusbar"
+                        statusbar_visible="planificada,en_ejecucion,pausada,finalizada"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" placeholder="Nombre de la obra"/></h1>
+                        <h2><field name="numero_obra" readonly="1"/></h2>
+                    </div>
+                    <group>
+                        <group string="Datos principales">
+                            <field name="tipo"/>
+                            <field name="prioridad"/>
+                            <field name="ubicacion"/>
+                            <field name="barrio"/>
+                            <field name="responsable_id"/>
+                            <field name="cuadrilla_id"/>
+                        </group>
+                        <group string="Fechas">
+                            <field name="fecha_inicio"/>
+                            <field name="fecha_fin_estimada"/>
+                            <field name="fecha_fin_real"/>
+                        </group>
+                    </group>
+                    <group string="Presupuesto">
+                        <group>
+                            <field name="presupuesto"/>
+                            <field name="costo_real"/>
+                        </group>
+                        <group>
+                            <field name="porcentaje_avance" widget="percentpie"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Descripción">
+                            <field name="descripcion"/>
+                            <field name="notas"/>
+                        </page>
+                        <page string="Registro de avances">
+                            <field name="avance_ids">
+                                <list editable="bottom">
+                                    <field name="fecha"/>
+                                    <field name="porcentaje"/>
+                                    <field name="descripcion"/>
+                                    <field name="responsable_id"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_obras_obra_search" model="ir.ui.view">
+        <field name="name">obras_comuna.obra.search</field>
+        <field name="model">obras_comuna.obra</field>
+        <field name="arch" type="xml">
+            <search string="Buscar obras">
+                <field name="name" string="Nombre"/>
+                <field name="numero_obra" string="Nº Obra"/>
+                <field name="barrio" string="Barrio"/>
+                <field name="cuadrilla_id" string="Cuadrilla"/>
+                <field name="responsable_id" string="Responsable"/>
+                <filter string="Planificadas" name="planificadas"
+                    domain="[('estado','=','planificada')]"/>
+                <filter string="En ejecución" name="en_ejecucion"
+                    domain="[('estado','=','en_ejecucion')]"/>
+                <filter string="Pausadas" name="pausadas"
+                    domain="[('estado','=','pausada')]"/>
+                <filter string="Finalizadas" name="finalizadas"
+                    domain="[('estado','=','finalizada')]"/>
+                <filter string="Canceladas" name="canceladas"
+                    domain="[('estado','=','cancelada')]"/>
+                <separator/>
+                <filter string="Agrupar por tipo" name="group_tipo"
+                    context="{'group_by': 'tipo'}"/>
+                <filter string="Agrupar por cuadrilla" name="group_cuadrilla"
+                    context="{'group_by': 'cuadrilla_id'}"/>
+                <filter string="Agrupar por estado" name="group_estado"
+                    context="{'group_by': 'estado'}"/>
+                <filter string="Agrupar por barrio" name="group_barrio"
+                    context="{'group_by': 'barrio'}"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_obras_obra" model="ir.actions.act_window">
+        <field name="name">Obras</field>
+        <field name="res_model">obras_comuna.obra</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_obras_obra_search"/>
+    </record>
+
+    <menuitem id="menu_obras_comuna" name="Obras Comuna" sequence="30"/>
+    <menuitem id="menu_obras_obras" name="Obras"
+        parent="menu_obras_comuna"
+        action="action_obras_obra"
+        sequence="10"/>
+    <menuitem id="menu_obras_cuadrillas" name="Cuadrillas"
+        parent="menu_obras_comuna"
+        action="action_obras_cuadrilla"
+        sequence="20"/>
+
+</odoo>

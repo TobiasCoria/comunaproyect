@@ -1,0 +1,381 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="action_report_informe_obra" model="ir.actions.report">
+        <field name="name">Informe de Obra</field>
+        <field name="model">obras_comuna.obra</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">obras_comuna.informe_obra</field>
+        <field name="report_file">obras_comuna.informe_obra</field>
+        <field name="binding_model_id" ref="model_obras_comuna_obra"/>
+    </record>
+
+    <template id="informe_obra">
+
+        <t t-call="web.html_container">
+
+            <t t-foreach="docs" t-as="o">
+
+                <t t-call="web.basic_layout">
+
+                    <div class="page">
+
+                        <style>
+
+                            .header {
+                                text-align: center;
+                                margin-bottom: 25px;
+                            }
+
+                            .header h1 {
+                                margin: 0;
+                                font-size: 24px;
+                                font-weight: bold;
+                                letter-spacing: 1px;
+                            }
+
+                            .header h2 {
+                                margin: 10px 0 5px 0;
+                                font-size: 18px;
+                                font-weight: bold;
+                            }
+
+                            .header p {
+                                margin: 0;
+                                color: #555;
+                            }
+
+                            .separator {
+                                border-top: 2px solid #444;
+                                margin: 15px 0;
+                            }
+
+                            .section {
+                                margin-top: 18px;
+                            }
+
+                            .section-title {
+                                background-color: #efefef;
+                                border-left: 5px solid #555;
+                                padding: 8px;
+                                font-weight: bold;
+                                font-size: 13px;
+                                margin-bottom: 8px;
+                            }
+
+                            .info-table {
+                                width: 100%;
+                            }
+
+                            .info-table td {
+                                padding: 6px;
+                            }
+
+                            .label {
+                                font-weight: bold;
+                                width: 18%;
+                            }
+
+                            .table-report {
+                                width: 100%;
+                                border-collapse: collapse;
+                                margin-top: 10px;
+                            }
+
+                            .table-report th {
+                                background: #e5e5e5;
+                                border: 1px solid #999;
+                                padding: 8px;
+                                text-align: center;
+                            }
+
+                            .table-report td {
+                                border: 1px solid #999;
+                                padding: 8px;
+                            }
+
+                            .center {
+                                text-align: center;
+                            }
+
+                            .right {
+                                text-align: right;
+                            }
+
+                            .summary-box {
+                                width: 40%;
+                                margin-left: auto;
+                                margin-top: 20px;
+                                border: 1px solid #999;
+                                padding: 10px;
+                            }
+
+                            .summary-box table {
+                                width: 100%;
+                            }
+
+                            .summary-box td {
+                                padding: 5px;
+                            }
+
+                            .signature-table {
+                                width: 100%;
+                                margin-top: 70px;
+                            }
+
+                            .signature-table td {
+                                width: 50%;
+                                text-align: center;
+                            }
+
+                        </style>
+
+                        <!-- CABECERA -->
+
+                        <div class="header">
+
+                            <h1>COMUNA DE WHEELWRIGHT</h1>
+
+                            <p>Provincia de Santa Fe - República Argentina</p>
+
+                            <h2>INFORME DE OBRA</h2>
+
+                            <p>
+                                <strong>N° de Obra:</strong>
+                                <span t-esc="o.numero_obra"/>
+                            </p>
+
+                        </div>
+
+                        <div class="separator"></div>
+
+                        <!-- INFORMACIÓN GENERAL -->
+
+                        <div class="section">
+
+                            <div class="section-title">
+                                INFORMACIÓN GENERAL
+                            </div>
+
+                            <table class="info-table">
+
+                                <tr>
+                                    <td class="label">Nombre</td>
+                                    <td><span t-esc="o.name"/></td>
+
+                                    <td class="label">Estado</td>
+                                    <td><span t-esc="o.estado"/></td>
+                                </tr>
+
+                                <tr>
+                                    <td class="label">Tipo</td>
+                                    <td><span t-esc="o.tipo"/></td>
+
+                                    <td class="label">Prioridad</td>
+                                    <td><span t-esc="o.prioridad"/></td>
+                                </tr>
+
+                                <tr>
+                                    <td class="label">Ubicación</td>
+                                    <td><span t-esc="o.ubicacion"/></td>
+
+                                    <td class="label">Barrio</td>
+                                    <td><span t-esc="o.barrio"/></td>
+                                </tr>
+
+                            </table>
+
+                        </div>
+
+                        <!-- RESPONSABLES -->
+
+                        <div class="section">
+
+                            <div class="section-title">
+                                RESPONSABLES
+                            </div>
+
+                            <table class="info-table">
+
+                                <tr>
+
+                                    <td class="label">Responsable</td>
+                                    <td>
+                                        <span t-esc="o.responsable_id.name"/>
+                                    </td>
+
+                                    <td class="label">Cuadrilla</td>
+                                    <td>
+                                        <span t-esc="o.cuadrilla_id.name"/>
+                                    </td>
+
+                                </tr>
+
+                            </table>
+
+                        </div>
+
+                        <!-- CRONOGRAMA -->
+
+                        <div class="section">
+
+                            <div class="section-title">
+                                CRONOGRAMA
+                            </div>
+
+                            <table class="info-table">
+
+                                <tr>
+
+                                    <td class="label">Inicio</td>
+                                    <td>
+                                        <span t-esc="o.fecha_inicio"/>
+                                    </td>
+
+                                    <td class="label">Fin Estimada</td>
+                                    <td>
+                                        <span t-esc="o.fecha_fin_estimada"/>
+                                    </td>
+
+                                    <td class="label">Fin Real</td>
+                                    <td>
+                                        <span t-esc="o.fecha_fin_real"/>
+                                    </td>
+
+                                </tr>
+
+                            </table>
+
+                        </div>
+
+                        <!-- REGISTRO DE AVANCES -->
+
+                        <t t-if="o.avance_ids">
+
+                            <div class="section">
+
+                                <div class="section-title">
+                                    REGISTRO DE AVANCES
+                                </div>
+
+                                <table class="table-report">
+
+                                    <thead>
+
+                                        <tr>
+                                            <th>Fecha</th>
+                                            <th>Avance</th>
+                                            <th>Descripción</th>
+                                            <th>Responsable</th>
+                                        </tr>
+
+                                    </thead>
+
+                                    <tbody>
+
+                                        <t t-foreach="o.avance_ids" t-as="a">
+
+                                            <tr>
+
+                                                <td>
+                                                    <span t-esc="a.fecha"/>
+                                                </td>
+
+                                                <td class="center">
+                                                    <span t-esc="a.porcentaje"/>%
+                                                </td>
+
+                                                <td>
+                                                    <span t-esc="a.descripcion"/>
+                                                </td>
+
+                                                <td>
+                                                    <span t-esc="a.responsable_id.name"/>
+                                                </td>
+
+                                            </tr>
+
+                                        </t>
+
+                                    </tbody>
+
+                                </table>
+
+                            </div>
+
+                        </t>
+
+                        <!-- RESUMEN ECONÓMICO -->
+
+                        <div class="summary-box">
+
+                            <table>
+
+                                <tr>
+                                    <td><strong>Presupuesto</strong></td>
+                                    <td class="right">
+                                        $
+                                        <span t-esc="o.presupuesto"/>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td><strong>Costo Real</strong></td>
+                                    <td class="right">
+                                        $
+                                        <span t-esc="o.costo_real"/>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td><strong>Avance Total</strong></td>
+                                    <td class="right">
+                                        <span t-esc="o.porcentaje_avance"/>%
+                                    </td>
+                                </tr>
+
+                            </table>
+
+                        </div>
+
+                        <!-- FIRMAS -->
+
+                        <table class="signature-table">
+
+                            <tr>
+
+                                <td>
+
+                                    ___________________________
+
+                                    <br/><br/>
+
+                                    Responsable Técnico
+
+                                </td>
+
+                                <td>
+
+                                    ___________________________
+
+                                    <br/><br/>
+
+                                    Autoridad Comunal
+
+                                </td>
+
+                            </tr>
+
+                        </table>
+
+                    </div>
+
+                </t>
+
+            </t>
+
+        </t>
+
+    </template>
+
+</odoo>
